@@ -1,0 +1,2 @@
+const a=["@keyframes fade-up-32fdea7a{0%{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}.animate-fade-up[data-v-32fdea7a]{animation:fade-up-32fdea7a .6s cubic-bezier(.25,.46,.45,.94)}.fade-enter-active[data-v-32fdea7a],.fade-leave-active[data-v-32fdea7a]{transition:opacity .3s ease,transform .3s ease}.fade-enter-from[data-v-32fdea7a],.fade-leave-to[data-v-32fdea7a]{opacity:0;transform:scale(.98)}"];export{a as default};
+//# sourceMappingURL=index-styles.D6VcA9e_.mjs.map

@@ -1,0 +1,2 @@
+const a=[".work-reveal[data-v-31554af4]{transform:translateY(20px);transition:opacity .6s cubic-bezier(.25,.46,.45,.94) var(--d,0s),transform .6s cubic-bezier(.25,.46,.45,.94) var(--d,0s)}.work-reveal.is-visible[data-v-31554af4]{opacity:1;transform:translateY(0)}@media(prefers-reduced-motion:reduce){.work-reveal[data-v-31554af4]{opacity:1;transform:none;transition:none}}"];export{a as default};
+//# sourceMappingURL=FeaturedCaseStudy-styles.B74gFJ8R.mjs.map

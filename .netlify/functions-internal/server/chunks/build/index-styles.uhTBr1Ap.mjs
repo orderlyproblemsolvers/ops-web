@@ -1,0 +1,2 @@
+const e=[".scrollbar-hide[data-v-3f87e43e]{-ms-overflow-style:none;scrollbar-width:none}.scrollbar-hide[data-v-3f87e43e]::-webkit-scrollbar{display:none}@keyframes fade-up-3f87e43e{0%{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}.animate-fade-up[data-v-3f87e43e]{animation:fade-up-3f87e43e .8s cubic-bezier(.25,.46,.45,.94)}@media(prefers-reduced-motion:reduce){.animate-fade-up[data-v-3f87e43e]{animation:none;opacity:1;transform:none}}"];export{e as default};
+//# sourceMappingURL=index-styles.uhTBr1Ap.mjs.map

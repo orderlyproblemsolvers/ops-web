@@ -1,0 +1,1067 @@
+// utils/serviceCategories.ts
+// Single source of truth for all service data.
+// Used by:
+//   - /pages/services/index.vue         (tab overview)
+//   - /pages/services/[category].vue    (category landing)
+//   - /pages/services/[category]/[slug].vue  (individual service)
+
+export interface Capability {
+  title:       string
+  description: string
+  icon:        string   // Heroicons outline SVG path string
+}
+
+export interface Service {
+  slug:         string
+  headline:     string
+  subheadline:  string
+  body:         string
+  tags:         string[]
+  capabilities: Capability[]
+  iconPath:     string   // Icon used in the overview grid cards
+  link:         string   // Computed full path — convenience for NuxtLink :to
+}
+
+export interface ServiceCategory {
+  id:       string
+  label:    string
+  heroBg:   string
+  services: Service[]
+}
+
+// ─── Shared icon paths (Heroicons outline) ────────────────────────────────────
+const icons = {
+  stack:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />',
+  chart:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />',
+  bulb:       '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.82 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.496 1.509 1.333 1.509 2.316V18" />',
+  globe:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />',
+  cpu:        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />',
+  cap:        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />',
+  receipt:    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />',
+  search:     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803zM13.5 10.5h-6" />',
+  users:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />',
+  cog:        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />',
+  doc:        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />',
+  spark:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />',
+  arrow:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />',
+  person:     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />',
+  currency:   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+  link:       '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />',
+  shield:     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />',
+  eye:        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />',
+  cloud:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />',
+  bolt:       '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />',
+  funnel:     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />',
+  megaphone:  '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" />',
+  wrench:     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />',
+  map:        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />',
+  beaker:     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />',
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY 1 — SOFTWARE SOLUTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+const softwareCategory: ServiceCategory = {
+  id:     'software',
+  label:  'Software',
+  heroBg: '/img/software.jpg',
+  services: [
+    {
+      slug:         'enterprise',
+      link:         '/services/software/enterprise',
+      headline:     'Custom Enterprise Software.',
+      subheadline:  'Built to scale, not to bloat.',
+      body:         'Off-the-shelf software forces you to change your business to fit the tool. We engineer unified CRM, ERP, and operational systems designed specifically around how your company actually works — so every process, role, and workflow is accounted for from day one.',
+      tags:         ['CRM', 'ERP', 'HR & Payroll', 'Accounting'],
+      iconPath:     icons.stack,
+      capabilities: [
+        {
+          title:       'Custom CRM',
+          description: 'Track leads, manage pipelines, and automate follow-ups with a system built around your exact sales process — not a generic template.',
+          icon:        icons.person,
+        },
+        {
+          title:       'ERP Architecture',
+          description: 'Unify finance, operations, HR, and procurement into a single source of truth that eliminates data silos and manual reconciliation.',
+          icon:        icons.link,
+        },
+        {
+          title:       'Accounting & Invoicing',
+          description: 'Automate billing cycles, track receivables, generate financial reports, and stay audit-ready without the month-end scramble.',
+          icon:        icons.currency,
+        },
+        {
+          title:       'Role-Based Access',
+          description: 'Every user sees exactly what they need — no more, no less. Granular permissions protect sensitive data while keeping teams unblocked.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'System Integration',
+          description: 'Connect your existing tools — accounting software, logistics platforms, third-party APIs — into one coherent operational layer.',
+          icon:        icons.cog,
+        },
+        {
+          title:       'Reporting & Dashboards',
+          description: 'Real-time visibility into the metrics that matter: revenue, headcount, pipeline, and operational health — all in one place.',
+          icon:        icons.chart,
+        },
+      ],
+    },
+    {
+      slug:         'inventory',
+      link:         '/services/software/inventory',
+      headline:     'Inventory Management.',
+      subheadline:  'Complete supply chain visibility.',
+      body:         'Stockouts cost you customers. Overstock costs you capital. Our inventory systems give you real-time visibility across every warehouse, location, and supplier — with intelligent automation that keeps stock levels where they need to be.',
+      tags:         ['Stock Tracking', 'Supplier DB', 'Automation', 'Reorder Rules'],
+      iconPath:     icons.receipt,
+      capabilities: [
+        {
+          title:       'Real-Time Stock Tracking',
+          description: 'Live visibility into inventory levels across all locations, warehouses, and fulfilment channels with instant low-stock alerts.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'Supplier Management',
+          description: 'Centralise your supplier database, track lead times, manage purchase orders, and compare vendor performance in one place.',
+          icon:        icons.users,
+        },
+        {
+          title:       'Automated Reorder Rules',
+          description: 'Set par levels and reorder triggers so replenishment happens automatically before you run out — without manual monitoring.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Multi-Location Support',
+          description: 'Track stock movements between warehouses, retail locations, and transit — with full audit trails for every item.',
+          icon:        icons.map,
+        },
+        {
+          title:       'Barcode & RFID Integration',
+          description: 'Speed up receiving, picking, and cycle counts with barcode scanning and RFID support built directly into the platform.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Demand Forecasting',
+          description: 'Analyse historical sales patterns to predict future demand and optimise purchasing decisions before shortfalls occur.',
+          icon:        icons.chart,
+        },
+      ],
+    },
+    {
+      slug:         'hr-payroll',
+      link:         '/services/software/hr-payroll',
+      headline:     'HR & Payroll Software.',
+      subheadline:  'Your people, fully managed.',
+      body:         'From the moment someone accepts an offer to the day they retire, every HR process should run without friction. We build workforce management systems that automate payroll, track attendance, manage leave, and keep you compliant — so your HR team spends less time on administration and more time on people.',
+      tags:         ['Payroll', 'Onboarding', 'Leave Management', 'Compliance'],
+      iconPath:     icons.users,
+      capabilities: [
+        {
+          title:       'Automated Payroll',
+          description: 'Calculate salaries, deductions, taxes, and allowances automatically each pay cycle — with full audit logs and payslip generation.',
+          icon:        icons.currency,
+        },
+        {
+          title:       'Employee Onboarding',
+          description: 'Digital onboarding flows that collect documents, assign training, set up access, and get new hires productive from day one.',
+          icon:        icons.person,
+        },
+        {
+          title:       'Leave & Attendance',
+          description: 'Employees request leave, managers approve, balances update automatically — all synced with payroll and the organisation calendar.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Performance Management',
+          description: 'Set goals, track progress, run appraisals, and maintain a full performance history for every employee in one system.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Compliance & Reporting',
+          description: 'Stay current with labour law requirements, generate statutory reports, and maintain an auditable record of all HR decisions.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'Self-Service Portal',
+          description: 'Employees update their own details, access payslips, submit requests, and check leave balances without going through HR.',
+          icon:        icons.eye,
+        },
+      ],
+    },
+    {
+      slug:         'proposal-quoting',
+      link:         '/services/software/proposal-quoting',
+      headline:     'Proposal & Quoting Software.',
+      subheadline:  'Close deals faster with less friction.',
+      body:         'Every day a proposal sits in a client\'s inbox is a day you could lose the deal. We build quoting systems that let your team produce accurate, professional proposals in minutes — complete with dynamic pricing, e-signature, and real-time status tracking.',
+      tags:         ['Dynamic Pricing', 'E-Signature', 'Templates', 'Pipeline Tracking'],
+      iconPath:     icons.doc,
+      capabilities: [
+        {
+          title:       'Proposal Builder',
+          description: 'Drag-and-drop proposal templates with brand-consistent design, pre-approved copy blocks, and product/service line items.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Dynamic Pricing Engine',
+          description: 'Configure pricing rules, volume discounts, and margin floors so reps always quote accurately without manual calculations.',
+          icon:        icons.currency,
+        },
+        {
+          title:       'E-Signature Integration',
+          description: 'Clients sign proposals directly from their inbox — no printing, no scanning, no chasing. Signed documents are stored automatically.',
+          icon:        icons.wrench,
+        },
+        {
+          title:       'Real-Time Status Tracking',
+          description: 'Know exactly when a client opens your proposal, how long they spend on each section, and when to follow up.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'CRM Integration',
+          description: 'Proposals sync directly with your CRM — opportunities update automatically when a quote is sent, viewed, or signed.',
+          icon:        icons.link,
+        },
+        {
+          title:       'Approval Workflows',
+          description: 'Large deals require sign-off? Route proposals through internal approval chains before they reach the client.',
+          icon:        icons.shield,
+        },
+      ],
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY 2 — ANALYTICS & BI
+// ─────────────────────────────────────────────────────────────────────────────
+const analyticsCategory: ServiceCategory = {
+  id:     'analytics',
+  label:  'Analytics',
+  heroBg: '/img/bi.png',
+  services: [
+    {
+      slug:         'business-intelligence',
+      link:         '/services/analytics/business-intelligence',
+      headline:     'Business Intelligence.',
+      subheadline:  'Turn your data into decisions.',
+      body:         'Most businesses are swimming in data and starving for insight. We build BI platforms that pull from every system you operate — sales, finance, ops, HR — and surface the patterns that drive better decisions, faster.',
+      tags:         ['BI Platforms', 'Dashboards', 'Reporting', 'KPIs'],
+      iconPath:     icons.chart,
+      capabilities: [
+        {
+          title:       'Executive Dashboards',
+          description: 'Real-time KPI dashboards for leadership — revenue, growth, retention, and operational health on a single screen.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'Custom Report Builder',
+          description: 'Business users build their own reports without writing SQL. Filter, group, and visualise any data from any connected source.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Multi-Source Data Integration',
+          description: 'Pull data from CRMs, ERPs, spreadsheets, databases, and third-party APIs into a single unified analytics layer.',
+          icon:        icons.link,
+        },
+        {
+          title:       'Automated Alerts',
+          description: 'Set thresholds on any metric — revenue, inventory, support volume — and get notified the moment something needs attention.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Cohort & Trend Analysis',
+          description: 'Understand how different customer segments, time periods, and product lines compare to each other over time.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Scheduled Reporting',
+          description: 'Weekly board packs, daily operations summaries, and monthly finance reports delivered automatically to the right inboxes.',
+          icon:        icons.megaphone,
+        },
+      ],
+    },
+    {
+      slug:         'customer-data-platform',
+      link:         '/services/analytics/customer-data-platform',
+      headline:     'Customer Data Platform.',
+      subheadline:  'One view of every customer.',
+      body:         'Your customer data is scattered across your CRM, support desk, e-commerce platform, and marketing tools. We build a unified Customer Data Platform that resolves every customer into a single actionable profile — so every team has the context they need.',
+      tags:         ['CDP', 'Segmentation', 'Identity Resolution', 'Activation'],
+      iconPath:     icons.users,
+      capabilities: [
+        {
+          title:       'Identity Resolution',
+          description: 'Match the same customer across email, phone, web session, and purchase history into a single unified profile.',
+          icon:        icons.person,
+        },
+        {
+          title:       'Behavioural Segmentation',
+          description: 'Slice your customer base by any combination of purchase history, engagement, lifecycle stage, or custom attributes.',
+          icon:        icons.funnel,
+        },
+        {
+          title:       'Real-Time Profile Updates',
+          description: 'Customer profiles update instantly as new events come in — a purchase, a support ticket, a web visit — so data is never stale.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Audience Activation',
+          description: 'Push audiences directly to ad platforms, email tools, and CRMs so marketing acts on data rather than guessing.',
+          icon:        icons.megaphone,
+        },
+        {
+          title:       'Consent & Privacy Management',
+          description: 'Track consent at the individual level and ensure data handling complies with GDPR, NDPR, and other applicable regulations.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'Lifetime Value Modelling',
+          description: 'Predict which customers are most valuable long-term so you invest retention and acquisition resources where they matter most.',
+          icon:        icons.currency,
+        },
+      ],
+    },
+    {
+      slug:         'survey-feedback',
+      link:         '/services/analytics/survey-feedback',
+      headline:     'Survey & Feedback Platforms.',
+      subheadline:  'Listen at scale, act with precision.',
+      body:         'Gut feel is not a strategy. We build feedback systems that capture structured signals from customers, employees, and stakeholders — then connect those signals directly to the operational data that explains them.',
+      tags:         ['NPS', 'CSAT', 'Employee Feedback', 'Analytics'],
+      iconPath:     icons.search,
+      capabilities: [
+        {
+          title:       'Survey Design & Logic',
+          description: 'Build branching surveys with conditional logic, rating scales, open text, and media upload — no code required.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'NPS & CSAT Automation',
+          description: 'Trigger satisfaction surveys automatically after key events — purchase, support resolution, onboarding completion.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Employee Pulse Surveys',
+          description: 'Anonymous, recurring surveys that measure engagement, morale, and team health — with trend tracking over time.',
+          icon:        icons.users,
+        },
+        {
+          title:       'Sentiment Analysis',
+          description: 'AI-powered analysis of open-text responses surfaces themes, emotions, and actionable patterns across thousands of responses.',
+          icon:        icons.spark,
+        },
+        {
+          title:       'Response Analytics',
+          description: 'Segment responses by location, team, product line, or customer tier to understand exactly where problems are concentrated.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Operational Integration',
+          description: 'Connect feedback scores to CRM records, support tickets, and HR data so you always know the context behind every score.',
+          icon:        icons.link,
+        },
+      ],
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY 3 — CONSULTING & STRATEGY
+// ─────────────────────────────────────────────────────────────────────────────
+const consultingCategory: ServiceCategory = {
+  id:     'consulting',
+  label:  'Consulting',
+  heroBg: '/img/consulting.jpg',
+  services: [
+    {
+      slug:         'business-strategy',
+      link:         '/services/consulting/business-strategy',
+      headline:     'Business Strategy Consulting.',
+      subheadline:  'Clarity on where you\'re going and how to get there.',
+      body:         'Growth without direction burns resources. We work alongside leadership teams to define where the business needs to go, what\'s standing in the way, and how to build a strategy that the organisation can actually execute — not just present.',
+      tags:         ['Strategic Planning', 'Market Analysis', 'OKRs', 'Growth'],
+      iconPath:     icons.bulb,
+      capabilities: [
+        {
+          title:       'Strategic Diagnosis',
+          description: 'A structured analysis of your market position, competitive landscape, internal capabilities, and the gaps between where you are and where you need to be.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Growth Roadmapping',
+          description: 'Translate strategy into a sequenced, prioritised roadmap with clear owners, milestones, and success metrics for each initiative.',
+          icon:        icons.map,
+        },
+        {
+          title:       'OKR Design & Alignment',
+          description: 'Design an OKR framework that cascades from company-level goals to individual teams — with the accountability structures to match.',
+          icon:        icons.link,
+        },
+        {
+          title:       'Market Entry Analysis',
+          description: 'Evaluate new markets, customer segments, and product opportunities with rigorous analysis before committing resources.',
+          icon:        icons.globe,
+        },
+        {
+          title:       'Board & Investor Readiness',
+          description: 'Prepare leadership teams for board presentations, investor conversations, and strategic reviews with structured narrative and data.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Execution Support',
+          description: 'Strategy only works if it gets executed. We stay embedded through implementation — not just the deck.',
+          icon:        icons.wrench,
+        },
+      ],
+    },
+    {
+      slug:         'digital-transformation',
+      link:         '/services/consulting/digital-transformation',
+      headline:     'Digital Transformation.',
+      subheadline:  'Modernise without disrupting what works.',
+      body:         'Moving from legacy processes to modern digital systems is not just a technology problem — it\'s a people, process, and change management problem. We guide organisations through every layer of transformation: what to change, in what order, and how to bring the team with you.',
+      tags:         ['Legacy Migration', 'Process Redesign', 'Change Management', 'Cloud'],
+      iconPath:     icons.cog,
+      capabilities: [
+        {
+          title:       'Digital Maturity Assessment',
+          description: 'Benchmark where your organisation sits on the digital maturity curve and identify the highest-leverage areas for investment.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Legacy System Migration',
+          description: 'Move from spreadsheets, paper processes, and outdated systems to modern platforms — without disrupting daily operations.',
+          icon:        icons.cloud,
+        },
+        {
+          title:       'Process Redesign',
+          description: 'Map, analyse, and redesign core business processes before automating them — so you don\'t digitise dysfunction.',
+          icon:        icons.map,
+        },
+        {
+          title:       'Technology Selection',
+          description: 'Evaluate and shortlist the right platforms, vendors, and architectures for your specific context — without vendor bias.',
+          icon:        icons.beaker,
+        },
+        {
+          title:       'Change Management',
+          description: 'Build the internal communication, training, and adoption plans that make the difference between a system that gets used and one that doesn\'t.',
+          icon:        icons.users,
+        },
+        {
+          title:       'Post-Go-Live Optimisation',
+          description: 'The first version is never the final version. We stay engaged post-launch to measure adoption, address friction, and optimise.',
+          icon:        icons.wrench,
+        },
+      ],
+    },
+    {
+      slug:         'it-consulting',
+      link:         '/services/consulting/it-consulting',
+      headline:     'IT & Technology Consulting.',
+      subheadline:  'The right technology decisions, made with confidence.',
+      body:         'Technology decisions made without a clear architecture strategy compound over time into expensive, fragile systems. We bring the senior technical judgment your team needs — without the full-time hire — to make decisions that you won\'t regret in three years.',
+      tags:         ['Architecture', 'Vendor Selection', 'Security', 'Infrastructure'],
+      iconPath:     icons.cpu,
+      capabilities: [
+        {
+          title:       'Technology Architecture Review',
+          description: 'Audit your current stack, identify technical debt, single points of failure, and the structural changes needed to support growth.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Vendor & Platform Selection',
+          description: 'Independent, unbiased evaluation of technology vendors and platforms — with structured scoring, demos, and commercial negotiation support.',
+          icon:        icons.beaker,
+        },
+        {
+          title:       'Cloud Strategy',
+          description: 'Design your cloud infrastructure for reliability, scalability, and cost-efficiency — whether you\'re migrating, expanding, or optimising.',
+          icon:        icons.cloud,
+        },
+        {
+          title:       'Cybersecurity Assessment',
+          description: 'Identify vulnerabilities across your systems, policies, and access controls — and get a prioritised remediation plan.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'DevOps & SDLC Consulting',
+          description: 'Improve your software delivery pipeline — faster releases, better testing, cleaner deployments, lower incident rates.',
+          icon:        icons.cog,
+        },
+        {
+          title:       'IT Governance & Policy',
+          description: 'Build the policies, standards, and governance structures that keep technology decisions consistent and risk-managed at scale.',
+          icon:        icons.doc,
+        },
+      ],
+    },
+    {
+      slug:         'operations-optimisation',
+      link:         '/services/consulting/operations-optimisation',
+      headline:     'Operations & Process Optimisation.',
+      subheadline:  'Remove the friction. Scale what works.',
+      body:         'Operational inefficiency compounds quietly. Manual handoffs, duplicated effort, unclear ownership, and broken workflows cost more than they appear to. We map, analyse, and redesign the operational layer of your business so every resource is pointed in the right direction.',
+      tags:         ['Process Mapping', 'Automation', 'SOPs', 'Efficiency'],
+      iconPath:     icons.wrench,
+      capabilities: [
+        {
+          title:       'Process Mapping & Analysis',
+          description: 'Document every critical process end-to-end — identifying bottlenecks, redundancies, and handoff failures that slow execution.',
+          icon:        icons.map,
+        },
+        {
+          title:       'SOP Development',
+          description: 'Create clear, version-controlled Standard Operating Procedures that make your organisation less dependent on any single person.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Workflow Automation',
+          description: 'Identify repetitive, rule-based tasks that can be automated — and build the automation so your team focuses on higher-value work.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Resource & Capacity Planning',
+          description: 'Match headcount, tools, and budget to actual operational demand — eliminating both bottlenecks and waste.',
+          icon:        icons.users,
+        },
+        {
+          title:       'Operational Metrics Design',
+          description: 'Define the KPIs that actually reflect operational health — and build the dashboards that make those metrics visible in real time.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Continuous Improvement Frameworks',
+          description: 'Embed a culture of systematic improvement with structured review cadences, retrospectives, and performance feedback loops.',
+          icon:        icons.cog,
+        },
+      ],
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY 4 — DIGITAL SERVICES
+// ─────────────────────────────────────────────────────────────────────────────
+const digitalCategory: ServiceCategory = {
+  id:     'digital',
+  label:  'Digital',
+  heroBg: '/img/digital.jpg',
+  services: [
+    {
+      slug:         'web-design-development',
+      link:         '/services/digital/web-design-development',
+      headline:     'Web Design & Development.',
+      subheadline:  'Your digital presence, built to convert.',
+      body:         'Your website is often the first serious interaction a prospect has with your business. We design and build websites that communicate clearly, load fast, and move visitors toward a decision — without sacrificing the craft that makes a brand memorable.',
+      tags:         ['Web Design', 'Development', 'CMS', 'Performance'],
+      iconPath:     icons.globe,
+      capabilities: [
+        {
+          title:       'UX & Interface Design',
+          description: 'Research-backed, user-centred interface design that prioritises clarity, hierarchy, and conversion at every touchpoint.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'Frontend Development',
+          description: 'Clean, semantic, performant code built on modern frameworks — fast to load, accessible by default, and easy to maintain.',
+          icon:        icons.cog,
+        },
+        {
+          title:       'CMS Integration',
+          description: 'Your team updates content without touching code. We build on the CMS that fits your workflow — Nuxt Content, Sanity, or others.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Landing Page Optimisation',
+          description: 'High-conversion landing pages built around a clear value proposition, a single call to action, and continuous A/B testing.',
+          icon:        icons.funnel,
+        },
+        {
+          title:       'Performance Engineering',
+          description: 'Core Web Vitals optimisation, image compression, caching strategy, and CDN configuration for sub-second load times globally.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Accessibility (WCAG)',
+          description: 'Every site we build meets WCAG 2.1 AA standards — keyboard navigable, screen-reader compatible, and contrast-compliant.',
+          icon:        icons.shield,
+        },
+      ],
+    },
+    {
+      slug:         'seo',
+      link:         '/services/digital/seo',
+      headline:     'SEO Services & Audits.',
+      subheadline:  'Be found by the right people at the right time.',
+      body:         'SEO is not about gaming algorithms — it\'s about building a website that search engines trust and users find useful. We run rigorous technical audits, build content strategies grounded in real search demand, and execute the on-page and off-page work that drives sustainable organic growth.',
+      tags:         ['Technical SEO', 'Content Strategy', 'Link Building', 'Analytics'],
+      iconPath:     icons.search,
+      capabilities: [
+        {
+          title:       'Technical SEO Audit',
+          description: 'Crawl-based analysis of site structure, indexability, page speed, Core Web Vitals, canonical issues, and schema markup.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Keyword Research & Strategy',
+          description: 'Map your audience\'s search intent to a keyword strategy that targets the queries your ideal customers actually use.',
+          icon:        icons.map,
+        },
+        {
+          title:       'On-Page Optimisation',
+          description: 'Systematically optimise titles, headings, meta descriptions, internal linking, and content structure across your entire site.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Content Strategy',
+          description: 'Build a content programme that earns authority in your niche — editorial calendars, topic clusters, and quality briefs for every piece.',
+          icon:        icons.megaphone,
+        },
+        {
+          title:       'Link Building',
+          description: 'Earn high-quality backlinks through digital PR, content partnerships, and outreach — no spam, no shortcuts.',
+          icon:        icons.link,
+        },
+        {
+          title:       'SEO Reporting',
+          description: 'Monthly reporting on rankings, traffic, CTR, and the business outcomes that SEO is actually contributing to.',
+          icon:        icons.chart,
+        },
+      ],
+    },
+    {
+      slug:         'infographic-design',
+      link:         '/services/digital/infographic-design',
+      headline:     'Infographic & Data Visualisation.',
+      subheadline:  'Complex ideas, communicated simply.',
+      body:         'Data that can\'t be understood can\'t drive decisions. We design infographics, data visualisations, and interactive displays that make complex information immediately legible — for internal presentations, client reports, and public communications.',
+      tags:         ['Data Viz', 'Motion Graphics', 'Reports', 'Interactive'],
+      iconPath:     icons.chart,
+      capabilities: [
+        {
+          title:       'Static Infographics',
+          description: 'High-quality, brand-consistent infographics for presentations, reports, social media, and editorial contexts.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'Data Visualisation Design',
+          description: 'Charts, maps, and visual representations of complex datasets — designed to reveal the insight, not obscure it.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Interactive Data Displays',
+          description: 'Web-embeddable, interactive visualisations built with D3.js or Chart.js that let users explore data on their own terms.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Annual Reports & Decks',
+          description: 'Visually compelling annual reports, investor decks, and board presentations that communicate performance with clarity.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Process & Systems Diagrams',
+          description: 'Visual documentation of complex workflows, architectures, and systems — for onboarding, training, and stakeholder alignment.',
+          icon:        icons.map,
+        },
+        {
+          title:       'Brand Consistency',
+          description: 'Every asset delivered within your brand guidelines — colour palette, typography, illustration style, and tone.',
+          icon:        icons.shield,
+        },
+      ],
+    },
+    {
+      slug:         'domain-services',
+      link:         '/services/digital/domain-services',
+      headline:     'Domain Registration Services.',
+      subheadline:  'Your digital address, properly managed.',
+      body:         'A domain is more than a URL — it\'s the root of your email deliverability, your brand credibility, and your search authority. We handle registration, DNS configuration, renewal management, and domain security so you never lose control of your most foundational digital asset.',
+      tags:         ['Domain Registration', 'DNS', 'Email Setup', 'Security'],
+      iconPath:     icons.globe,
+      capabilities: [
+        {
+          title:       'Domain Registration',
+          description: 'Search, register, and secure your preferred domain names across all major TLDs — with transparent pricing and no hidden renewal fees.',
+          icon:        icons.globe,
+        },
+        {
+          title:       'DNS Configuration',
+          description: 'Correct DNS setup for your website, email, and subdomains — including MX records, SPF, DKIM, and DMARC for deliverability.',
+          icon:        icons.cog,
+        },
+        {
+          title:       'Domain Portfolio Management',
+          description: 'Track, renew, and protect multiple domains from a single dashboard — with automated alerts before anything expires.',
+          icon:        icons.map,
+        },
+        {
+          title:       'Domain Security (DNSSEC)',
+          description: 'Enable DNSSEC and domain locking to prevent hijacking, cache poisoning, and unauthorised transfers.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'Business Email Setup',
+          description: 'Configure professional email on your domain via Google Workspace or Microsoft 365 — with proper authentication from day one.',
+          icon:        icons.megaphone,
+        },
+        {
+          title:       'Domain Transfer & Migration',
+          description: 'Move domains between registrars cleanly — with zero downtime and full continuity of DNS records and email services.',
+          icon:        icons.arrow,
+        },
+      ],
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY 5 — AI & DATA
+// ─────────────────────────────────────────────────────────────────────────────
+const aiCategory: ServiceCategory = {
+  id:     'ai',
+  label:  'AI & Data',
+  heroBg: '/img/ai.jpg',
+  services: [
+    {
+      slug:         'generative-ai',
+      link:         '/services/ai/generative-ai',
+      headline:     'Generative AI for Enterprise.',
+      subheadline:  'AI that works inside your business, not around it.',
+      body:         'Consumer AI tools are general-purpose. Enterprise AI needs to work with your data, your systems, and your processes. We design and deploy generative AI solutions that are grounded in your organisational context — not hallucinating answers from the public internet.',
+      tags:         ['LLMs', 'RAG', 'Agents', 'Fine-Tuning'],
+      iconPath:     icons.spark,
+      capabilities: [
+        {
+          title:       'AI Use Case Discovery',
+          description: 'Structured workshops to identify where AI delivers the highest return in your specific operation — before any engineering begins.',
+          icon:        icons.search,
+        },
+        {
+          title:       'RAG Implementation',
+          description: 'Retrieval-Augmented Generation systems that let LLMs answer questions using your internal documents, databases, and knowledge bases.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Enterprise AI Agents',
+          description: 'Autonomous agents that complete multi-step tasks — research, analysis, drafting, and data entry — inside your existing tools and workflows.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Custom Model Fine-Tuning',
+          description: 'Fine-tune foundation models on your proprietary data so outputs match your domain, terminology, and quality standards.',
+          icon:        icons.beaker,
+        },
+        {
+          title:       'AI Governance & Safety',
+          description: 'Policy frameworks, human-in-the-loop controls, and monitoring systems that keep AI deployments compliant, explainable, and auditable.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'AI Integration Layer',
+          description: 'Connect AI capabilities to your existing systems — CRMs, ERPs, communication platforms — via robust, production-grade APIs.',
+          icon:        icons.link,
+        },
+      ],
+    },
+    {
+      slug:         'data-strategy',
+      link:         '/services/ai/data-strategy',
+      headline:     'Data & AI Strategy.',
+      subheadline:  'A data foundation worth building on.',
+      body:         'AI is only as good as the data underneath it. Before investing in models, organisations need a coherent data strategy — clear ownership, reliable pipelines, governed storage, and the analytical infrastructure to turn data into decisions. We build that foundation.',
+      tags:         ['Data Strategy', 'Data Architecture', 'Governance', 'Pipelines'],
+      iconPath:     icons.chart,
+      capabilities: [
+        {
+          title:       'Data Audit & Inventory',
+          description: 'Catalogue every data source your organisation produces, consumes, and stores — and assess quality, completeness, and accessibility.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Data Architecture Design',
+          description: 'Design a data warehouse or lakehouse architecture that supports your current reporting needs and future AI ambitions.',
+          icon:        icons.map,
+        },
+        {
+          title:       'ETL / Data Pipeline Engineering',
+          description: 'Build reliable, monitored pipelines that move data from source systems to analytics infrastructure without manual intervention.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Data Governance Framework',
+          description: 'Define ownership, access controls, quality standards, and retention policies across your entire data estate.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'Master Data Management',
+          description: 'Create a single authoritative version of critical business entities — customers, products, suppliers — across all systems.',
+          icon:        icons.link,
+        },
+        {
+          title:       'AI Readiness Assessment',
+          description: 'Evaluate whether your data is ready to power machine learning and AI — and identify the gaps that need to close first.',
+          icon:        icons.beaker,
+        },
+      ],
+    },
+    {
+      slug:         'intelligent-automation',
+      link:         '/services/ai/intelligent-automation',
+      headline:     'Intelligent Automation.',
+      subheadline:  'Let machines handle the repeatable. Free people for the complex.',
+      body:         'Traditional automation handles simple, rule-based tasks. Intelligent automation handles judgment — classification, extraction, routing, and decision-making that previously required a person. We identify where these capabilities apply in your business and build them.',
+      tags:         ['RPA', 'ML Automation', 'Document Processing', 'Workflow AI'],
+      iconPath:     icons.cpu,
+      capabilities: [
+        {
+          title:       'Process Mining',
+          description: 'Analyse system event logs to surface the actual paths work takes through your organisation — and identify automation candidates.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Robotic Process Automation',
+          description: 'Automate repetitive desktop and web-based tasks — data entry, report generation, file processing — that eat hours every week.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Intelligent Document Processing',
+          description: 'Extract structured data from invoices, contracts, forms, and emails using ML-powered OCR and classification models.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'ML-Based Decision Automation',
+          description: 'Apply machine learning to automate approval decisions, risk scoring, fraud flagging, and routing — at a scale no team can match manually.',
+          icon:        icons.beaker,
+        },
+        {
+          title:       'Human-in-the-Loop Design',
+          description: 'Build exceptions handling so automation escalates correctly when it encounters edge cases — keeping humans in control of the hard calls.',
+          icon:        icons.users,
+        },
+        {
+          title:       'Automation Performance Monitoring',
+          description: 'Track error rates, processing volumes, and SLA compliance across all automated workflows with real-time dashboards.',
+          icon:        icons.chart,
+        },
+      ],
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY 6 — TRAINING & EDUCATION
+// ─────────────────────────────────────────────────────────────────────────────
+const educationCategory: ServiceCategory = {
+  id:     'education',
+  label:  'Training',
+  heroBg: '/img/learning.jpg',
+  services: [
+    {
+      slug:         'lms',
+      link:         '/services/education/lms',
+      headline:     'Learning Management Systems.',
+      subheadline:  'Training your people, at scale.',
+      body:         'A spreadsheet full of training records is not a learning programme. We build Learning Management Systems that deliver structured courses, track completion, assess knowledge, and give HR and management the visibility they need to build genuinely capable teams.',
+      tags:         ['LMS', 'Course Builder', 'Assessments', 'Compliance Training'],
+      iconPath:     icons.cap,
+      capabilities: [
+        {
+          title:       'Course Builder',
+          description: 'Create structured learning paths with video lessons, documents, quizzes, and assignments — all within a single authoring environment.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Learner Progress Tracking',
+          description: 'Monitor completion rates, assessment scores, time-on-task, and certificate attainment for every learner across every course.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Compliance Training Automation',
+          description: 'Automatically enrol employees in mandatory training, send reminders, and flag non-compliance to managers before deadlines pass.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'Assessment & Certification',
+          description: 'Design graded assessments with pass/fail thresholds, retake rules, and automated certificate generation upon completion.',
+          icon:        icons.cap,
+        },
+        {
+          title:       'SCORM & xAPI Support',
+          description: 'Import third-party courses built in Articulate, Lectora, or any SCORM/xAPI-compliant authoring tool.',
+          icon:        icons.link,
+        },
+        {
+          title:       'Mobile-First Learning',
+          description: 'Learners access courses on any device — desktop, tablet, or mobile — with offline support for field-based teams.',
+          icon:        icons.bolt,
+        },
+      ],
+    },
+    {
+      slug:         'elearning',
+      link:         '/services/education/elearning',
+      headline:     'Corporate E-Learning Platforms.',
+      subheadline:  'Training that actually transfers to the job.',
+      body:         'Most corporate training is forgotten within a week because it\'s designed for compliance, not competence. We build e-learning programmes grounded in instructional design principles — so knowledge actually sticks and behaviour actually changes.',
+      tags:         ['Instructional Design', 'Video', 'Microlearning', 'Custom Content'],
+      iconPath:     icons.doc,
+      capabilities: [
+        {
+          title:       'Instructional Design',
+          description: 'Apply evidence-based learning science — spaced repetition, scenario-based learning, retrieval practice — to every programme we build.',
+          icon:        icons.bulb,
+        },
+        {
+          title:       'Custom Course Production',
+          description: 'From scripting to screen recording to final delivery — fully produced e-learning modules tailored to your specific roles and context.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'Microlearning Design',
+          description: 'Break complex skills into short, focused learning units that fit into a working day — 3 to 7 minutes per module, high retention.',
+          icon:        icons.bolt,
+        },
+        {
+          title:       'Video-Based Learning',
+          description: 'Professionally scripted and edited video lessons, animated explainers, and talking-head recordings with captions and transcripts.',
+          icon:        icons.megaphone,
+        },
+        {
+          title:       'Scenario & Simulation Design',
+          description: 'Branching scenarios that put learners in realistic situations and let them practice judgment before the stakes are real.',
+          icon:        icons.beaker,
+        },
+        {
+          title:       'Learning Effectiveness Measurement',
+          description: 'Evaluate whether training is working — pre/post assessments, performance data integration, and ROI reporting for L&D investment.',
+          icon:        icons.chart,
+        },
+      ],
+    },
+    {
+      slug:         'ats',
+      link:         '/services/education/ats',
+      headline:     'Applicant Tracking Systems.',
+      subheadline:  'Hire better people, faster.',
+      body:         'Great hiring is a process problem as much as a people problem. We build Applicant Tracking Systems that standardise your hiring workflow, reduce time-to-offer, and give hiring managers the information they need to make better decisions — without drowning in admin.',
+      tags:         ['ATS', 'Job Posting', 'Pipeline', 'Interviews'],
+      iconPath:     icons.users,
+      capabilities: [
+        {
+          title:       'Job Posting & Distribution',
+          description: 'Publish roles to your careers site and multiple job boards simultaneously — with applicant data flowing into one pipeline automatically.',
+          icon:        icons.megaphone,
+        },
+        {
+          title:       'Application Pipeline',
+          description: 'Kanban-style pipeline view with configurable stages — Applied, Screening, Interview, Offer, Hired — for every open role.',
+          icon:        icons.funnel,
+        },
+        {
+          title:       'CV Parsing & Screening',
+          description: 'Automatically extract structured data from CVs and score candidates against role requirements — so shortlisting takes minutes, not days.',
+          icon:        icons.search,
+        },
+        {
+          title:       'Interview Scheduling',
+          description: 'Automated interview scheduling that syncs with hiring manager calendars and sends candidates self-service booking links.',
+          icon:        icons.cog,
+        },
+        {
+          title:       'Structured Interview Kits',
+          description: 'Standardised interview scorecards with role-specific competencies — so every interviewer evaluates the same things, consistently.',
+          icon:        icons.doc,
+        },
+        {
+          title:       'Offer Management',
+          description: 'Generate and send offer letters digitally, track acceptance status, and trigger onboarding workflows the moment a candidate signs.',
+          icon:        icons.link,
+        },
+      ],
+    },
+    {
+      slug:         'certifications',
+      link:         '/services/education/certifications',
+      headline:     'Technical Certification Programs.',
+      subheadline:  'Verified skills. Credible credentials.',
+      body:         'Certifications matter when they mean something. We design and deliver technical certification programmes that validate real competence — with rigorous assessments, industry-recognised credentials, and the continuing education frameworks to keep them current.',
+      tags:         ['Certification Design', 'Assessment', 'Badges', 'CPD'],
+      iconPath:     icons.cap,
+      capabilities: [
+        {
+          title:       'Certification Framework Design',
+          description: 'Define the competency domains, learning outcomes, and assessment standards that make your certification genuinely meaningful.',
+          icon:        icons.map,
+        },
+        {
+          title:       'Exam Development',
+          description: 'Psychometrically valid exam design — item writing, difficulty calibration, cut-score setting, and security protocols.',
+          icon:        icons.beaker,
+        },
+        {
+          title:       'Digital Badging',
+          description: 'Issue verifiable digital credentials via Open Badges — shareable on LinkedIn, CVs, and professional profiles.',
+          icon:        icons.shield,
+        },
+        {
+          title:       'Online Proctoring',
+          description: 'Secure remote examination with AI-assisted proctoring, identity verification, and behaviour flagging for integrity.',
+          icon:        icons.eye,
+        },
+        {
+          title:       'CPD / Recertification Tracking',
+          description: 'Track continuing professional development points, recertification requirements, and renewal deadlines for all credential holders.',
+          icon:        icons.chart,
+        },
+        {
+          title:       'Cohort & Cohort Management',
+          description: 'Manage examination cohorts, bulk registration, results processing, and certificate distribution for large candidate groups.',
+          icon:        icons.users,
+        },
+      ],
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXPORT — single array consumed by all service pages
+// ─────────────────────────────────────────────────────────────────────────────
+export const serviceCategories: ServiceCategory[] = [
+  softwareCategory,
+  analyticsCategory,
+  consultingCategory,
+  digitalCategory,
+  aiCategory,
+  educationCategory,
+]
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS — used in [category].vue and [category]/[slug].vue
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Find a category by its id string. Returns undefined if not found. */
+export const getCategoryById = (id: string): ServiceCategory | undefined =>
+  serviceCategories.find(c => c.id === id)
+
+/** Find a service by category id + service slug. Returns undefined if not found. */
+export const getServiceBySlug = (
+  categoryId: string,
+  slug: string
+): Service | undefined =>
+  getCategoryById(categoryId)?.services.find(s => s.slug === slug)
+
+/**
+ * Flat list of all services across all categories.
+ * Useful for sitemap generation and global search.
+ */
+export const allServices: (Service & { categoryId: string; categoryLabel: string })[] =
+  serviceCategories.flatMap(cat =>
+    cat.services.map(svc => ({
+      ...svc,
+      categoryId:    cat.id,
+      categoryLabel: cat.label,
+    }))
+  )

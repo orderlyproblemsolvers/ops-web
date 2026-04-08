@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --color-primary:       #051c2c;
+  --color-secondary: #118ab2;
+  --color-ops-navy:       #051c2c;
+  --color-ops-surface:    #0A2840;
+  --color-ops-elevated:   #0F3350;
+  --color-ops-black:      #020f1a;
+  --color-accent:         #118ab2;
+  --color-accent-hover:   #1499c5;
+  --color-text-primary:   #F5F5F7;
+  --color-text-secondary: #86868B;
+  --color-text-tertiary:  #6E6E73;
+  --color-white:          #ffffff;
+  --color-divider:        rgba(255, 255, 255, 0.08);
+
+  --radius-card:   18px;
+  --radius-button: 980px;
+  --radius-chip:   6px;
+  --radius-input:  10px;
+  --radius-icon:   12px;
+
+  --text-hero:       clamp(48px, 7vw, 88px);
+  --text-display:    clamp(36px, 5vw, 64px);
+  --text-heading:    clamp(24px, 3vw, 40px);
+  --text-subheading: clamp(18px, 2vw, 24px);
+  --text-body-lg:    21px;
+  --text-body:       17px;
+  --text-label:      12px;
+  --text-caption:    12px;
+
+  --spacing-1:  4px;
+  --spacing-2:  8px;
+  --spacing-3:  12px;
+  --spacing-4:  16px;
+  --spacing-5:  24px;
+  --spacing-6:  32px;
+  --spacing-7:  48px;
+  --spacing-8:  64px;
+  --spacing-9:  80px;
+  --spacing-10: 120px;
+  --spacing-11: 160px;
+}
+
+@theme static {
+  --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in:     cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-ops-navy);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+  body { margin: 0; }
+}
+
+@layer utilities {
+  .text-hero { font-size: var(--text-hero); font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; }
+  .text-heading { font-size: var(--text-heading); font-weight: 600; line-height: 1.15; letter-spacing: -0.015em; }
+  .text-subheading { font-size: var(--text-subheading); font-weight: 400; line-height: 1.4; letter-spacing: -0.01em; }
+  .text-body { font-size: var(--text-body); line-height: 1.65; }
+  .text-label { font-size: var(--text-label); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+  
+  .card-lift { transition: transform 300ms var(--ease-out), box-shadow 300ms ease; }
+  .card-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4); }
+  .icon-well { width: 48px; height: 48px; border-radius: var(--radius-icon); background: rgba(17, 138, 178, 0.10); display: flex; align-items: center; justify-content: center; }
+}
