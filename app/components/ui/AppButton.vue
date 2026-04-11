@@ -1,54 +1,11 @@
 <template>
-  <!--
-    The SVG filter is defined once in the DOM, hidden, and referenced
-    by the liquid-glass button via filter: url(#lg-button).
-    It only renders when the primary variant is used — other variants
-    skip the wrapper entirely.
-  -->
   <template v-if="variant === 'primary'">
-
-    <!-- Hidden SVG filter definition — injected once, reused by all instances -->
     <svg width="0" height="0" class="absolute overflow-hidden pointer-events-none" aria-hidden="true">
       <defs>
-        <filter id="lg-button" x="-20%" y="-50%" width="140%" height="200%" color-interpolation-filters="sRGB">
-          <!--
-            feTurbulence generates the organic noise that drives displacement.
-            Low baseFrequency = soft, large-scale distortion (glass-like).
-            We animate the seed so the glass "breathes" very subtly on hover.
-          -->
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.018 0.032"
-            numOctaves="2"
-            seed="4"
-            result="noise"
-          />
-          <!--
-            feDisplacementMap bends the pixels beneath the button using the
-            noise field. scale="7" is subtle — large enough to read as
-            refraction, small enough not to distort the label text.
-            xChannelSelector="R" yChannelSelector="G" maps noise channels
-            to x/y displacement independently (anisotropic glass).
-          -->
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="7"
-            xChannelSelector="R"
-            yChannelSelector="G"
-            result="displaced"
-          />
-        </filter>
-
-        <!--
-          Separate filter for the specular edge highlight.
-          feGaussianBlur + feComposite creates a soft rim light
-          that only appears at the button edge, like light catching
-          the rim of a glass object.
-        -->
-        <filter id="lg-rim" x="-5%" y="-30%" width="110%" height="160%">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        <filter id="lg-refract" x="-20%" y="-50%" width="140%" height="200%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.028" numOctaves="3" seed="7" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+          <feColorMatrix in="displaced" type="saturate" values="1.15"/>
         </filter>
       </defs>
     </svg>
@@ -57,52 +14,33 @@
       :is="isLink ? NuxtLink : 'button'"
       :to="to"
       :href="href"
-      :class="[
-        'lg-btn inline-flex items-center justify-center rounded-button transition-all duration-300 relative overflow-hidden select-none',
-        sizeClasses[size],
-      ]"
+      v-bind="attrs"
+      :class="['lg-btn', sizeClasses[size], attrs.class]"
     >
-      <!--
-        Layer 1 — the displaced/refracted backdrop.
-        This is what creates the glass impression: a slightly-tinted
-        translucent surface with the displacement filter applied.
-        The background is the accent colour at reduced opacity so the
-        content behind "bleeds through" subtly.
-      -->
-      <span class="lg-glass" aria-hidden="true" />
-
-      <!--
-        Layer 2 — specular rim highlight.
-        A thin gradient arc along the top edge simulates the bright
-        specular reflection you'd see on real glass — like a curved
-        light source hitting the top of the lens.
-      -->
-      <span class="lg-specular" aria-hidden="true" />
-
-      <!--
-        Layer 3 — inner glow on the bottom edge (shadow side of glass).
-        Balances the top highlight — real glass has a darker inner
-        shadow opposite the light source.
-      -->
-      <span class="lg-inner-shadow" aria-hidden="true" />
-
-      <!-- Label — always on top, unaffected by the filter -->
-      <span class="relative z-10 font-medium tracking-[-0.01em]">
-        <slot />
+      <span class="lg-shell" aria-hidden="true">
+        <span class="lg-fill" />
+        <span class="lg-border" />
+        <span class="lg-specular-top" />
+        <span class="lg-caustic" />
+        <span class="lg-prism-l" />
+        <span class="lg-prism-r" />
+        <span class="lg-depth" />
       </span>
+      <span class="lg-label"><slot /></span>
     </component>
   </template>
 
-  <!-- Non-primary variants — no glass effect, standard styling -->
   <component
     v-else
     :is="isLink ? NuxtLink : 'button'"
     :to="to"
     :href="href"
+    v-bind="attrs"
     :class="[
-      'inline-flex items-center justify-center rounded-button transition-colors duration-200',
+      'inline-flex items-center justify-center rounded-full transition-colors duration-200',
       sizeClasses[size],
       variantClasses[variant],
+      attrs.class,
     ]"
   >
     <slot />
@@ -110,9 +48,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, resolveComponent } from 'vue'
+import { computed, resolveComponent, useAttrs } from 'vue'
+
+defineOptions({ inheritAttrs: false })
 
 const NuxtLink = resolveComponent('NuxtLink')
+const attrs = useAttrs()
 
 interface Props {
   variant?: 'primary' | 'ghost' | 'outline'
@@ -131,168 +72,208 @@ const props = withDefaults(defineProps<Props>(), {
 const isLink = computed(() => !!props.to || !!props.href)
 
 const sizeClasses: Record<string, string> = {
-  sm: 'px-4    py-2    text-[13px]',
-  md: 'px-[18px] py-[10px] text-[14px]',
-  lg: 'px-7    py-3.5  text-[16px]',
+  sm: 'lg-sm',
+  md: 'lg-md',
+  lg: 'lg-lg',
 }
 
 const variantClasses: Record<string, string> = {
-  // primary handled by glass layers above
   ghost:   'bg-transparent border border-white text-white hover:bg-white hover:text-ops-navy',
   outline: 'bg-transparent border border-ops-navy text-ops-navy hover:bg-ops-navy hover:text-white',
 }
 </script>
 
 <style scoped>
-/* ════════════════════════════════════════════════════════════════════════════
-   LIQUID GLASS BUTTON
-   
-   The effect has four visual layers stacked inside the button:
-     1. .lg-glass      — displaced, tinted backdrop (the "glass" material)
-     2. .lg-specular   — bright rim highlight at the top edge
-     3. .lg-inner-shadow — dark shadow rim at the bottom edge
-     4. slot content   — label, always above the filters
-
-   The SVG displacement filter is applied to .lg-glass only, NOT to the
-   entire button — this keeps the label text crisp and unaffected.
-════════════════════════════════════════════════════════════════════════════ */
-
-/* ── Base button ─────────────────────────────────────────────────────────── */
 .lg-btn {
-  /*
-    The base background is the accent colour at full opacity.
-    The glass layers sit ON TOP and add the optical effects.
-    Using a solid base means the button is always legible even if
-    filters are unsupported.
-  */
-  background: #118ab2;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.20) inset, /* top inner highlight */
-    0 4px 16px rgba(17, 138, 178, 0.30),       /* coloured drop shadow */
-    0 1px 3px rgba(0, 0, 0, 0.20);             /* grounding shadow */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: -0.01em;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.lg-btn:hover {
-  background: #1499c5;
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.28) inset,
-    0 6px 24px rgba(17, 138, 178, 0.40),
-    0 2px 6px rgba(0, 0, 0, 0.25);
-  transform: translateY(-1px);
-}
+.lg-sm { padding: 8px 20px;  font-size: 13px; }
+.lg-md { padding: 12px 28px; font-size: 15px; }
+.lg-lg { padding: 16px 38px; font-size: 17px; }
 
-.lg-btn:active {
-  transform: translateY(0px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.15) inset,
-    0 2px 8px rgba(17, 138, 178, 0.25),
-    0 1px 2px rgba(0, 0, 0, 0.20);
-}
-
-/* ── Glass layer — the displaced translucent surface ─────────────────────── */
-.lg-glass {
+.lg-shell {
   position: absolute;
   inset: 0;
   border-radius: inherit;
+  overflow: hidden;
+}
 
-  /*
-    Semi-transparent tinted overlay — this is what you see "through".
-    The backdrop-filter blurs content behind the button, the
-    SVG displacement filter distorts those blurred pixels to
-    simulate refraction.
-  */
+.lg-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.04) 50%,
-    rgba(0, 0, 0, 0.06) 100%
+    145deg,
+    rgba(17, 138, 178, 0.45) 0%,
+    rgba(17, 138, 178, 0.22) 50%,
+    rgba(10, 100, 140, 0.28) 100%
   );
-  backdrop-filter: blur(8px) saturate(1.4);
-  -webkit-backdrop-filter: blur(8px) saturate(1.4);
-
-  /*
-    Apply the SVG displacement filter to this layer only.
-    The filter ID matches the <filter id="lg-button"> defined in the template.
-  */
-  filter: url(#lg-button);
+  backdrop-filter: blur(24px) saturate(1.8) brightness(1.1);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.1);
+  filter: url(#lg-refract);
 }
 
-/* ── Specular highlight — bright arc on the top rim ─────────────────────── */
-.lg-specular {
+.lg-border {
   position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 50%;
+  inset: 0;
   border-radius: inherit;
-  border-bottom-left-radius: 60% 40%;
-  border-bottom-right-radius: 60% 40%;
+  border: 1px solid rgba(100, 210, 240, 0.28);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.10),
+    0 0 0 1px rgba(0, 0, 0, 0.15);
+}
 
-  /*
-    A focused radial gradient simulates a convex glass surface
-    catching a light source from above-centre.
-    opacity is kept low — this is a subtle material cue, not a flare.
-  */
+.lg-specular-top {
+  position: absolute;
+  top: 0; left: 8%; right: 8%;
+  height: 55%;
+  border-bottom-left-radius: 60% 100%;
+  border-bottom-right-radius: 60% 100%;
   background: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(255, 255, 255, 0.36) 0%,
-    rgba(255, 255, 255, 0.10) 50%,
+    ellipse at 50% -10%,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(180, 235, 255, 0.22) 35%,
+    rgba(255, 255, 255, 0.04) 65%,
     transparent 100%
   );
+  mix-blend-mode: screen;
   pointer-events: none;
-
-  /* Smooth transition on hover — highlight intensifies slightly */
-  transition: opacity 300ms ease;
-  opacity: 0.9;
+  transition: background 0.25s ease;
 }
 
-.lg-btn:hover .lg-specular {
-  opacity: 1;
-  background: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(255, 255, 255, 0.46) 0%,
-    rgba(255, 255, 255, 0.14) 50%,
-    transparent 100%
-  );
-}
-
-/* ── Inner shadow — dark arc on the bottom rim (shadow side of the lens) ─── */
-.lg-inner-shadow {
+.lg-caustic {
   position: absolute;
-  bottom: 0;
-  left: 5%;
-  right: 5%;
-  height: 45%;
-  border-radius: inherit;
-  border-top-left-radius: 60% 40%;
-  border-top-right-radius: 60% 40%;
+  bottom: 0; left: 15%; right: 15%;
+  height: 40%;
+  border-top-left-radius: 50% 80%;
+  border-top-right-radius: 50% 80%;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.18) 0%,
+    rgba(17, 138, 178, 0.25) 0%,
+    rgba(100, 210, 240, 0.10) 50%,
     transparent 100%
   );
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
-/* ── Focus ring ──────────────────────────────────────────────────────────── */
-.lg-btn:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 3px rgba(17, 138, 178, 0.5),
-    0 1px 0 rgba(255, 255, 255, 0.20) inset;
+.lg-prism-l {
+  position: absolute;
+  top: 20%; bottom: 20%; left: 0;
+  width: 3px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(100, 220, 255, 0.65) 40%,
+    rgba(17, 138, 178, 0.55) 70%,
+    transparent 100%
+  );
+  filter: blur(1px);
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
 
-/* ── Reduced motion ──────────────────────────────────────────────────────── */
+.lg-prism-r {
+  position: absolute;
+  top: 20%; bottom: 20%; right: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(17, 138, 178, 0.55) 40%,
+    rgba(80, 200, 230, 0.50) 70%,
+    transparent 100%
+  );
+  filter: blur(1px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.lg-depth {
+  position: absolute;
+  inset: 3px;
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.20),
+    inset 0 -1px 4px rgba(0, 0, 0, 0.10);
+  pointer-events: none;
+}
+
+.lg-label {
+  position: relative;
+  z-index: 10;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lg-btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  box-shadow:
+    0 8px 32px rgba(17, 138, 178, 0.40),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(17, 138, 178, 0.18);
+  z-index: -1;
+  transition: box-shadow 0.25s ease;
+  pointer-events: none;
+}
+
+.lg-btn:hover {
+  transform: translateY(-2px) scale(1.015);
+}
+
+.lg-btn:hover::after {
+  box-shadow:
+    0 16px 48px rgba(17, 138, 178, 0.50),
+    0 4px 16px rgba(0, 0, 0, 0.30),
+    0 0 40px rgba(17, 138, 178, 0.25),
+    0 0 0 1px rgba(100, 210, 240, 0.22);
+}
+
+.lg-btn:hover .lg-specular-top {
+  background: radial-gradient(
+    ellipse at 50% -10%,
+    rgba(255, 255, 255, 0.70) 0%,
+    rgba(180, 235, 255, 0.30) 35%,
+    rgba(255, 255, 255, 0.06) 65%,
+    transparent 100%
+  );
+}
+
+.lg-btn:active {
+  transform: translateY(0px) scale(0.985);
+  transition-duration: 0.1s;
+}
+
+.lg-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(17, 138, 178, 0.55);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lg-btn,
-  .lg-specular {
-    transition: none;
-  }
-  .lg-btn:hover {
-    transform: none;
-  }
+  .lg-btn::after,
+  .lg-specular-top { transition: none; }
+  .lg-btn:hover { transform: none; }
 }
 </style>

@@ -11,7 +11,7 @@
       :overlay="false"
       :ui="{
         root: '[--duration:35s] [--gap:--spacing(16)]',
-        content: 'w-auto items-center',
+        content: 'w-auto items-center grayscale-50',
       }"
       aria-label="Partner logos"
     >
