@@ -10,10 +10,14 @@
 
       <div class="relative z-10 max-w-300 mx-auto px-5">
         <div class="max-w-200">
-          <div class="flex items-center gap-3 mb-6 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
-            <NuxtLink to="/services" class="text-[13px] font-medium text-text-tertiary hover:text-white transition-colors">Services</NuxtLink>
-            <span class="text-text-tertiary text-[10px]">/</span>
-            <span class="text-[13px] font-medium text-accent">{{ categoryData.label }}</span>
+
+          <!-- ✅ Replaced hand-rolled breadcrumb with useBreadcrumbItems + UBreadcrumb -->
+          <div class="mb-6 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
+            <UBreadcrumb :items="breadcrumbs">
+              <template #separator>
+                <span class="mx-1 text-white/30 text-[10px]">/</span>
+              </template>
+            </UBreadcrumb>
           </div>
           
           <h1 class="text-[clamp(40px,5vw,64px)] font-bold text-text-primary leading-[1.1] tracking-tight mb-8 opacity-0 animate-fade-up" style="animation-delay: 200ms; animation-fill-mode: forwards;">
@@ -101,15 +105,24 @@ import { getCategoryById } from '~/utils/servicesData'
 
 const route = useRoute()
 
-// 1. Fetch category data based on the URL (e.g., 'software', 'ai')
 const categoryData = computed(() => getCategoryById(route.params.category as string))
 
-// 2. 404 Protection: If the category doesn't exist, kill the page properly
 if (!categoryData.value) {
   throw createError({ statusCode: 404, statusMessage: 'Category not found', fatal: true })
 }
 
-// --- Helper: Truncate Text by Word Count ---
+// ✅ This route only has one dynamic segment (/services/[category]),
+// so we only need one override to label it properly.
+const breadcrumbs = useBreadcrumbItems({
+  overrides: [
+    undefined, // "Services" root — auto-generated, leave as-is
+    {
+      label: categoryData.value.label,
+      current: true,
+    },
+  ],
+})
+
 function truncateText(text: string | undefined, maxWords: number = 15) {
   if (!text) return ''
   const words = text.split(' ')
@@ -117,16 +130,13 @@ function truncateText(text: string | undefined, maxWords: number = 15) {
   return words.slice(0, maxWords).join(' ') + '...'
 }
 
-// Base description string derived from your template
 const pageDescription = `Explore our specialized offerings within ${categoryData.value.label}. We build robust systems designed to scale with your operations.`
 
-// 3. Dynamic SEO
 useSeoMeta({
   title: `${categoryData.value.label} Services`,
   description: pageDescription,
 })
 
-// 4. Visual Open Graph Image Generation
 defineOgImage('OpsTemplate', {
   title: `${categoryData.value.label} Solutions.`,
   description: truncateText(pageDescription, 15),

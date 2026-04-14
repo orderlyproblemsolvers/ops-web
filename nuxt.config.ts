@@ -6,6 +6,18 @@ export default defineNuxtConfig({
   gtag: {
     id: process.env.NUXT_PUBLIC_GA_ID
   },
+  app: {
+    head: {
+      link: [
+        {
+          rel: 'alternate',
+          type: 'application/rss+xml',
+          title: 'Orderly Problem Solvers Insights',
+          href: '/rss.xml'
+        }
+      ]
+    }
+  },
   modules: [
     '@nuxt/image',
     '@nuxt/ui',

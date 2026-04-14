@@ -12,12 +12,14 @@
       <div class="relative z-10 max-w-300 mx-auto px-5">
         <div class="max-w-200">
           
-          <div class="flex items-center gap-3 mb-6 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
-            <NuxtLink to="/services" class="text-[13px] font-medium text-text-tertiary hover:text-white transition-colors">Services</NuxtLink>
-            <span class="text-text-tertiary text-[10px]">/</span>
-            <span class="text-[13px] font-medium text-text-tertiary capitalize">{{ route.params.category }}</span>
-            <span class="text-text-tertiary text-[10px]">/</span>
-            <span class="text-[13px] font-medium text-accent capitalize">{{ route.params.slug }}</span>
+          <!-- ✅ Replaced hand-rolled breadcrumb with useBreadcrumbItems + UBreadcrumb -->
+          <div class="mb-6 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
+<UBreadcrumb :items="breadcrumbs">
+  <template #separator>
+    <span class="mx-1 text-white/30 text-[10px]">/</span>
+  </template>
+</UBreadcrumb>
+
           </div>
           
           <h1 class="text-[clamp(40px,5vw,64px)] font-bold text-text-primary leading-[1.1] tracking-tight mb-8 opacity-0 animate-fade-up" style="animation-delay: 200ms; animation-fill-mode: forwards;">
@@ -64,33 +66,45 @@
       </div>
     </div>
 
-    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, createError, type ServiceCategory } from '#imports'
-// serviceCategories is auto-imported from your utils folder!
 
 const route = useRoute()
 
-// 1. Find the parent category matching the URL (e.g., 'software')
 const categoryData: any = computed(() => {
   return serviceCategories.find(c => c.id === route.params.category)
 })
 
-// 2. Find the specific service matching the URL (e.g., 'enterprise')
 const serviceData = computed(() => {
   if (!categoryData.value) return null
   return categoryData.value.services.find((s: { slug: string | string[] | undefined }) => s.slug === route.params.slug)
 })
 
-// 3. 404 Protection: If someone types a bad URL, throw a proper error
 if (!categoryData.value || !serviceData.value) {
   throw createError({ statusCode: 404, statusMessage: 'Service not found', fatal: true })
 }
 
-// --- Helper: Truncate Text by Word Count ---
+// ✅ useBreadcrumbItems auto-reads the current route segments.
+// We use `overrides` to give the dynamic segments human-readable labels
+// (otherwise they'd fall back to raw slug strings like "enterprise").
+const breadcrumbs = useBreadcrumbItems({
+  overrides: [
+    undefined, // leave the auto-generated "Services" root item as-is
+    {
+      label: categoryData.value?.name ?? String(route.params.category),
+      to: `/services/${route.params.category}`,
+    },
+    {
+      label: serviceData.value?.headline ?? String(route.params.slug),
+      current: true,
+    },
+  ],
+})
+
 function truncateText(text: string | undefined, maxWords: number = 15) {
   if (!text) return ''
   const words = text.split(' ')
@@ -104,7 +118,6 @@ useHead({
       type: 'application/ld+json',
       innerHTML: computed(() => {
         if (!serviceData.value) return null
-
         return JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
@@ -114,7 +127,6 @@ useHead({
             "@type": "Organization",
             "name": "Orderly Problem Solvers"
           },
-          // Maps your capabilities list to service features!
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
             "name": "Capabilities",
@@ -133,20 +145,16 @@ useHead({
   ]
 })
 
-// 4. Dynamic SEO Injection
 useSeoMeta({
   title: `${serviceData.value.headline}`,
   description: serviceData.value.body,
 })
 
-// 5. Visual Open Graph Image Generation
 defineOgImage('OpsTemplate', {
   title: serviceData.value.headline,
   description: truncateText(serviceData.value.body, 15),
-  // Capitalizes the URL parameter (e.g., 'software' -> 'Software') for a clean badge
   badge: String(route.params.category).charAt(0).toUpperCase() + String(route.params.category).slice(1)
 })
-
 </script>
 
 <style scoped>

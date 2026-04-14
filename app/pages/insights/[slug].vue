@@ -20,7 +20,7 @@
 
     <article v-else ref="articleRef" class="max-w-190 mx-auto px-5 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
       
-      <NuxtLink to="/insights" class="text-[14px] font-medium text-text-tertiary hover:text-white mb-10 inline-flex items-center gap-1.5 transition-colors duration-200 group">
+      <NuxtLink to="/insights" class="text-[14px] font-medium text-text-tertiary hover:text-white mb-6 inline-flex items-center gap-1.5 transition-colors duration-200 group">
         <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         All Insights
       </NuxtLink>
@@ -307,9 +307,10 @@ if (post.value) {
     title: `${post.value.title}`,
     ogTitle: `${post.value.title}`,
     description: post.value.excerpt || 'Read our latest insights on software and scaling.',
+    robots: 'max-image-preview:large',
   })
 
-  defineOgImageComponent('OpsTemplate', {
+  defineOgImage('OpsTemplate', {
     title: post.value.title,
     description: truncateText(post.value.excerpt as string, 18),
     badge: post.value.category || 'Article'
@@ -321,6 +322,14 @@ if (post.value) {
 }
 
 useHead({
+  link: [
+    {
+      rel: 'alternate',
+      type: 'application/rss+xml',
+      title: 'Orderly Problem Solvers Insights',
+      href: 'https://www.orderlyproblemsolvers.com/rss.xml' // Ensure you generate this!
+    }
+  ],
   script: [
     {
       type: 'application/ld+json',
@@ -340,7 +349,8 @@ useHead({
           "dateModified": post.value.updatedAt || post.value.createdAt,
           "author": {
             "@type": "Organization",
-            "name": "Orderly Problem Solvers"
+            "name": "Orderly Problem Solvers",
+            "url": "https://www.orderlyproblemsolvers.com"
           },
           "publisher": {
             "@type": "Organization",
@@ -374,11 +384,11 @@ useHead({
 .tiptap-content {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: #a1a1aa;
+  color: #E6F1F8;
 }
 
-:deep(.tiptap-content h2) { font-size: 1.85rem; font-weight: 700; color: #ffffff; margin-top: 3rem; margin-bottom: 1.25rem; line-height: 1.3;}
-:deep(.tiptap-content h3) { font-size: 1.4rem; font-weight: 600; color: #ffffff; margin-top: 2.25rem; margin-bottom: 1rem; line-height: 1.3; }
+:deep(.tiptap-content h2) { font-size: 1.85rem; font-weight: 500; color: #ffffff; margin-top: 3rem; margin-bottom: 1.25rem; line-height: 1.3; text-decoration: underline var(--color-ops-sky);}
+:deep(.tiptap-content h3) { font-size: 1.4rem; font-weight: 500; color: #ffffff; margin-top: 2.25rem; margin-bottom: 1rem; line-height: 1.3; }
 
 :deep(.tiptap-content p) { margin-bottom: 1.5rem; }
 
@@ -400,7 +410,7 @@ useHead({
 
 :deep(.tiptap-content table) { border-collapse: collapse; width: 100%; margin: 2rem 0; border-radius: 0.75rem; border-style: hidden; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05); display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
 :deep(.tiptap-content td), :deep(.tiptap-content th) { border: 1px solid rgba(255, 255, 255, 0.05); padding: 1rem 1.25rem; vertical-align: top; }
-:deep(.tiptap-content th) { background-color: rgba(255, 255, 255, 0.03); font-weight: 600; text-align: left; color: #ffffff; }
+:deep(.tiptap-content th) { background-color: rgba(255, 255, 255, 0.03); font-weight: 500; text-align: left; color: #ffffff; }
 
 :deep(.tiptap-content .iframe-wrapper) { position: relative; width: 100%; padding-top: 56.25%; border-radius: 1rem; overflow: hidden; margin: 2.5rem 0; background: #000; border: 1px solid rgba(255, 255, 255, 0.05); }
 :deep(.tiptap-content .iframe-wrapper iframe) { position: absolute; inset: 0; width: 100% !important; height: 100% !important; border: none; }
