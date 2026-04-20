@@ -4,7 +4,7 @@
     <div class="relative pt-35 lg:pt-50 pb-[80px] lg:pb-10 overflow-hidden border-b border-white/5">
       
       <div class="absolute inset-0 z-0 pointer-events-none">
-        <img :src="categoryData.heroBg" :alt="serviceData.headline" class="w-full h-full object-cover object-center opacity-20" />
+        <img :src="categoryData.heroBg" :alt="serviceData.headline" class="w-[80%] h-[80%] object-cover object-center opacity-20" />
         <div class="absolute inset-0 bg-linear-to-b from-ops-navy/95 via-ops-navy/80 to-ops-navy" />
         <div class="absolute top-0 right-0 w-150 h-150 bg-accent/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/3" />
       </div>

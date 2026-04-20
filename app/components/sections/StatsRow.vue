@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-ops-surface py-14 overflow-hidden">
+  <section class="bg-primary py-14 overflow-hidden">
 
     <p class="text-label text-text-secondary tracking-widest text-center mb-2">
       Trusted by forward-thinking organisations
