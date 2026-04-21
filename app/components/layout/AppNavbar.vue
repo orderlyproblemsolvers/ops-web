@@ -2,7 +2,7 @@
   <header
     :class="[
       'fixed top-0 left-0 right-0 z-9000 transition-all duration-300 ease-out',
-      isScrolled
+      isScrolled || isLightBg
         ? 'bg-ops-navy/85 backdrop-blur-xl border-b border-white/6 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
         : 'bg-transparent border-b border-transparent',
       hideHeader && !mobileOpen ? '-translate-y-full' : 'translate-y-0',
@@ -11,7 +11,7 @@
     <div
       :class="[
         'w-full max-w-300 mx-auto px-6 flex items-center justify-between gap-8 transition-all duration-300 ease-out',
-        isScrolled ? 'h-18' : 'h-24',
+        isScrolled || isLightBg ? 'h-18' : 'h-24',
       ]"
     >
 
@@ -26,7 +26,7 @@
           alt="OPS Logo"
           :class="[
             'w-auto object-contain invert transition-all duration-300 ease-out',
-            isScrolled ? 'h-12' : 'h-22',
+            isScrolled || isLightBg ? 'h-12' : 'h-22',
           ]"
           preload
           fetchpriority="high"
@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppButton from '../ui/AppButton.vue'
 
@@ -128,6 +128,10 @@ const route      = useRoute()
 const isScrolled = ref(false)
 const mobileOpen = ref(false)
 const hideHeader = ref(false)
+
+// Routes that have a white/light background — header must never be transparent on these
+const lightBgRoutes = ['/insights']
+const isLightBg = computed(() => lightBgRoutes.some(r => route.path.startsWith(r)))
 
 // Track breakpoint reactively so resize events don't cause stale isMobile reads
 const isMobile = ref(false)

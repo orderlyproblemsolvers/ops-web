@@ -1,12 +1,12 @@
 <template>
-  <section class="bg-ops-surface py-[64px] md:py-10 px-5">
+  <section class="bg-gray-50 py-[64px] md:py-10 px-5">
     <div class="max-w-300 mx-auto">
 
       <!-- Section header -->
       <div class="text-center mb-12 max-w-170 mx-auto">
         <span class="text-label text-accent block mb-4">What We Do</span>
-        <h2 class="text-heading text-text-primary mb-4">Every solution your business needs.</h2>
-        <p class="text-body text-text-secondary leading-relaxed">
+        <h2 class="text-heading text-gray-900 mb-4">Every solution your business needs.</h2>
+        <p class="text-body text-gray-500 leading-relaxed">
           From enterprise software to AI strategy — OPS covers the full spectrum of digital operations.
         </p>
       </div>
@@ -26,10 +26,10 @@
           :id="`tab-${category.id}`"
           @click="setActive(i, category)"
           :class="[
-            'relative shrink-0 px-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ops-surface',
+            'relative shrink-0 px-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-white',
             activeIndex === i
               ? 'bg-accent text-white shadow-[0_0_20px_rgba(17,138,178,0.25)]'
-              : 'bg-white/5 text-text-secondary hover:text-text-primary hover:bg-white/9 border border-white/8',
+              : 'bg-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-200 border border-gray-200',
           ]"
         >
           {{ category.label }}
@@ -50,7 +50,7 @@
               <!-- Hero card -->
               <NuxtLink
                 :to="activeCategory.services[0].link"
-                class="group relative bg-ops-navy rounded-card flex flex-col justify-between overflow-hidden card-lift min-h-70 md:min-h-80"
+                class="group relative bg-ops-navy rounded-card flex flex-col justify-between overflow-hidden transition-opacity duration-200 hover:opacity-90 min-h-56 md:min-h-64"
                 @click="handleCardClick(activeCategory.services[0], activeCategory.label, 'hero')"
               >
                 <div
@@ -73,20 +73,20 @@
                   aria-hidden="true"
                 />
 
-                <div class="relative z-10 p-6 md:p-10">
-                  <div class="icon-well mb-6 md:mb-8">
+                <div class="relative z-10 p-5 md:p-7">
+                  <div class="icon-well mb-4 md:mb-5">
                     <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" v-html="activeCategory.services[0].iconPath" />
                   </div>
 
-                  <h3 class="text-[22px] md:text-[26px] font-semibold text-text-primary mb-3 leading-snug tracking-tight">
+                  <h3 class="text-[20px] md:text-[23px] font-semibold text-text-primary mb-2 leading-snug tracking-tight">
                     {{ activeCategory.services[0].headline }}
                   </h3>
-                  <p class="text-[14px] md:text-[15px] text-text-secondary leading-relaxed max-w-95">
+                  <p class="text-[13px] md:text-[14px] text-text-secondary leading-relaxed max-w-95">
                     {{ activeCategory.services[0].body }}
                   </p>
                 </div>
 
-                <div class="relative z-10 flex flex-wrap items-center justify-between gap-3 px-6 pb-6 md:px-10 md:pb-10">
+                <div class="relative z-10 flex flex-wrap items-center justify-between gap-3 px-5 pb-5 md:px-7 md:pb-7">
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="tag in activeCategory.services[0].tags"
@@ -109,22 +109,22 @@
                   v-for="service in activeCategory.services.slice(1)"
                   :key="service.headline"
                   :to="service.link"
-                  class="group bg-ops-navy rounded-[14px] p-5 md:p-7 flex flex-col justify-between card-lift"
+                  class="group bg-white border border-accent/25 hover:border-accent/50 rounded-[14px] p-4 md:p-5 flex flex-col justify-between transition-colors duration-200"
                   @click="handleCardClick(service, activeCategory.label, 'supporting')"
                 >
                   <div>
-                    <div class="icon-well mb-5 w-10! h-10! rounded-input!">
-                      <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" v-html="service.iconPath" />
+                    <div class="icon-well-light mb-3 w-9! h-9! rounded-input!">
+                      <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" v-html="service.iconPath" />
                     </div>
-                    <h3 class="text-[16px] font-semibold text-text-primary mb-2 leading-snug">
+                    <h3 class="text-[15px] font-semibold text-gray-900 mb-1.5 leading-snug">
                       {{ service.headline }}
                     </h3>
-                    <p class="text-[13px] text-text-secondary leading-relaxed">
+                    <p class="text-[12px] text-gray-500 leading-relaxed">
                       {{ service.body }}
                     </p>
                   </div>
 
-                  <div class="text-[13px] text-accent font-medium inline-flex items-center gap-1 mt-6">
+                  <div class="text-[12px] text-accent font-medium inline-flex items-center gap-1 mt-4">
                     Explore <span class="cta-arrow">&rarr;</span>
                   </div>
                 </NuxtLink>
@@ -139,7 +139,7 @@
       <div class="text-center mt-14">
         <NuxtLink
           to="/services"
-          class="inline-flex items-center gap-2 text-[14px] font-medium text-text-secondary hover:text-text-primary transition-colors duration-200 group"
+          class="inline-flex items-center gap-2 text-[14px] font-medium text-gray-400 hover:text-gray-900 transition-colors duration-200 group"
           @click="track('view_all_services_click', { page: 'home' })"
         >
           View all services
@@ -166,7 +166,7 @@ const track = (eventName: string, params?: Record<string, any>) => {
 const activeIndex = ref(0)
 
 const setActive = (i: number, category: typeof categories[number]) => {
-  if (activeIndex.value === i) return  // don't fire if already active
+  if (activeIndex.value === i) return
   activeIndex.value = i
   track('service_category_view', {
     page: 'home',
@@ -238,7 +238,7 @@ const categories = [
       {
         headline: 'Proposal & Quoting',
         body: 'Close faster with professional proposals, dynamic pricing, and e-signature built in.',
-        link: '/services/software/proposals',
+        link: '/services/software/proposal-quoting',
         iconPath: icons.doc,
       },
     ],
@@ -383,6 +383,18 @@ const categories = [
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Light-mode icon well — replaces the dark .icon-well global utility */
+.icon-well-light {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  background-color: rgba(17, 138, 178, 0.08);
+  border: 1px solid rgba(17, 138, 178, 0.15);
 }
 
 @keyframes hero-img-fade {

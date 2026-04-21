@@ -39,7 +39,8 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-auth-utils',
     'nuxt-seo-utils',
-    'nuxt-gtag'
+    'nuxt-gtag',
+    '@nuxtjs/google-fonts'
   ],
   css: ['~/assets/css/main.css'],
   vite: {
@@ -53,6 +54,13 @@ export default defineNuxtConfig({
         'prosemirror-tables'
       ]
     }
+  },
+  googleFonts: {
+    families: {
+      Lexend: [300, 400, 500, 600, 700],
+    },
+    display: 'swap',
+    preload: true,
   },
   typescript:{
     strict: false

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+body {
+  font-family: 'Lexend', sans-serif;
+}
 
 @theme {
   --color-primary:       #051c2c;

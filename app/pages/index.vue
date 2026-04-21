@@ -10,8 +10,8 @@
     />
 
     <div ref="statsRef"><StatsRow /></div>
-    <div ref="valueRef"><ValueStrip /></div>
     <div ref="servicesRef"><ServicesGrid @service-click="handleServiceClick" /></div>
+    <div ref="valueRef"><ValueStrip /></div>
     <div ref="caseStudyRef"><FeaturedCaseStudy /></div>
     <div ref="testimonialsRef"><TestimonialsBlock /></div>
 
