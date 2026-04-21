@@ -16,7 +16,7 @@
             <svg class="w-5 h-5 text-text-tertiary mb-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
             </svg>
-            <blockquote class="text-[16px] md:text-body text-text-secondary leading-relaxed mb-8">
+            <blockquote class="text-[16px] md:text-body text-text-primary leading-relaxed mb-8">
               "Before OPS, we were drowning in manual paperwork. The unified MIS platform they engineered hasn't just reduced our administrative processing time by 85%—it has given us complete operational clarity. Parent satisfaction is at an all-time high, and our staff can finally focus on education rather than data entry."
             </blockquote>
           </div>
@@ -41,7 +41,7 @@
             <svg class="w-5 h-5 text-text-tertiary mb-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
             </svg>
-            <blockquote class="text-[16px] md:text-body text-text-secondary leading-relaxed mb-8">
+            <blockquote class="text-[16px] md:text-body text-text-primary leading-relaxed mb-8">
               "The digital presence and platform OPS built for us completely transformed our acquisition funnel. It's not just a beautiful website; it's a high-converting machine. Within months of launch, we've seen a massive surge in qualified leads and a seamless onboarding process that our new clients absolutely love."
             </blockquote>
           </div>

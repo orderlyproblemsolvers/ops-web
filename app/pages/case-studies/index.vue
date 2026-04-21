@@ -4,7 +4,7 @@
       
       <div class="mb-16 lg:mb-24 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
         <span class="text-[13px] font-bold text-accent uppercase tracking-widest block mb-4">Our Work</span>
-        <h1 class="text-[clamp(40px,5vw,64px)] font-bold text-text-primary leading-[1.1] tracking-tight max-w-3xl">
+        <h1 class="text-[clamp(32px,4vw,48px)] font-bold text-text-primary leading-[1.1] tracking-tight max-w-3xl">
           Systems engineered for measurable impact.
         </h1>
         <p class="text-[18px] text-text-secondary mt-6 max-w-2xl leading-relaxed">
