@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-gray-50 py-[64px] md:py-10 px-5">
+  <section class="bg-white py-[64px] md:py-10 px-5">
     <div class="max-w-300 mx-auto">
 
       <!-- Section header -->
@@ -232,7 +232,7 @@ const categories = [
       {
         headline: 'HR & Payroll',
         body: 'End-to-end workforce management — from onboarding to payslip, automated and compliant.',
-        link: '/services/software/hr',
+        link: '/services/software/hr-payroll',
         iconPath: icons.users,
       },
       {
@@ -258,13 +258,13 @@ const categories = [
       {
         headline: 'Customer Data Platform',
         body: 'Unify customer data from every touchpoint into a single actionable profile.',
-        link: '/services/bi/cdp',
+        link: '/services/analytics/customer-data-platform',
         iconPath: icons.users,
       },
       {
         headline: 'Survey & Feedback',
         body: 'Capture, analyse, and act on customer and employee feedback at scale.',
-        link: '/services/bi/surveys',
+        link: '/services/analytics/survey-feedback',
         iconPath: icons.search,
       },
     ],
@@ -284,13 +284,13 @@ const categories = [
       {
         headline: 'Digital Transformation',
         body: 'Move legacy processes to modern systems without disrupting day-to-day operations.',
-        link: '/services/consulting/digital',
+        link: '/services/consulting/digital-transformation',
         iconPath: icons.cog,
       },
       {
         headline: 'Operations Optimisation',
         body: 'Identify bottlenecks, automate repeatable tasks, and build SOPs that scale.',
-        link: '/services/consulting/ops',
+        link: '/services/consulting/it-consulting',
         iconPath: icons.chart,
       },
     ],
@@ -316,7 +316,7 @@ const categories = [
       {
         headline: 'Infographic Design',
         body: 'Turn complex data and processes into clear, shareable visual communication.',
-        link: '/services/digital/design',
+        link: '/services/digital/infographic-design',
         iconPath: icons.chart,
       },
     ],
@@ -336,13 +336,13 @@ const categories = [
       {
         headline: 'Data Strategy',
         body: 'Build a data infrastructure that powers decisions rather than just reports.',
-        link: '/services/ai/data',
+        link: '/services/ai/data-strategy',
         iconPath: icons.chart,
       },
       {
         headline: 'Intelligent Automation',
         body: 'Automate repetitive decisions and workflows with AI models trained on your data.',
-        link: '/services/ai/automation',
+        link: '/services/ai/intelligent-automation',
         iconPath: icons.cpu,
       },
     ],

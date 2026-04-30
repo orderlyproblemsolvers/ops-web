@@ -34,7 +34,7 @@
           <img
             :src="partner.src"
             :alt="`${partner.name} logo`"
-            class="h-28 w-auto object-contain partner-logo"
+            class="h-28 w-auto object-contain partner-logo grayscale"
             loading="lazy"
             draggable="false"
           />

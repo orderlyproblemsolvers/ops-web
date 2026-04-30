@@ -11,7 +11,6 @@
 
     <div ref="statsRef"><StatsRow /></div>
     <div ref="servicesRef"><ServicesGrid @service-click="handleServiceClick" /></div>
-    <div ref="valueRef"><ValueStrip /></div>
     <div ref="caseStudyRef"><FeaturedCaseStudy /></div>
     <div ref="testimonialsRef"><TestimonialsBlock /></div>
 
@@ -102,7 +101,6 @@ let observer: IntersectionObserver | null = null
 
 const sections = [
   { ref: statsRef,       name: 'stats_row' },
-  { ref: valueRef,       name: 'value_strip' },
   { ref: servicesRef,    name: 'services_grid' },
   { ref: caseStudyRef,   name: 'case_study' },
   { ref: testimonialsRef,name: 'testimonials' },
