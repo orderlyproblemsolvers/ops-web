@@ -44,17 +44,19 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.css'],
   vite: {
-    optimizeDeps: {
-      include: [
-        '@nuxt/ui > prosemirror-state',
-        '@nuxt/ui > prosemirror-transform',
-        '@nuxt/ui > prosemirror-model',
-        '@nuxt/ui > prosemirror-view',
-        '@nuxt/ui > prosemirror-gapcursor',
-        'prosemirror-tables'
-      ]
-    }
-  },
+  optimizeDeps: {
+    include: [
+      '@nuxt/ui > prosemirror-state',
+      '@nuxt/ui > prosemirror-transform',
+      '@nuxt/ui > prosemirror-model',
+      '@nuxt/ui > prosemirror-view',
+      '@nuxt/ui > prosemirror-gapcursor',
+      'prosemirror-tables',
+      '@vue/devtools-core',
+      '@vue/devtools-kit',
+    ]
+  }
+},
   googleFonts: {
     families: {
       Lexend: [300, 400, 500, 600, 700],
@@ -66,6 +68,7 @@ export default defineNuxtConfig({
     strict: false
   },
   runtimeConfig:{
+    databaseUrl: process.env.DATABASE_URL,
     public: {
       cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
       cloudinaryUploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET,
