@@ -1,5 +1,5 @@
-import { db } from '../../../utils/db';
-import { enquiries } from '../../../database/schema';
+import { db } from '../~~/server/utils/db';
+import { enquiries } from '../~~/server/database/schema';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);

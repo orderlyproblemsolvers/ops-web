@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import { db } from '../../utils/db';
-import { insights } from '../../database/schema';
+import { db } from '~~/server/utils/db';
+import { insights } from '~~/server/database/schema';
 
 export default defineEventHandler(async (event) => {
   await requireUserSession(event);

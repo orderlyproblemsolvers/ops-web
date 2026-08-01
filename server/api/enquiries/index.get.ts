@@ -1,11 +1,15 @@
 import { desc } from 'drizzle-orm';
-import { db } from '../../utils/db';
-import { enquiries } from '../../database/schema';
+import { db } from '~~/server/utils/db';
+import { enquiries } from '~~/server/database/schema';
+
+interface AppUser {
+  role?: 'admin' | 'user'
+}
 
 export default defineEventHandler(async (event) => {
   try {
     // 1. Authentication & Authorization Check
-    const session = await requireUserSession(event);
+    const session = await requireUserSession(event) as { user: AppUser | null };
     
     // Ensure the user actually has admin privileges, not just an active session
     if (session.user?.role !== 'admin') {

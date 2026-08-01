@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-import { db } from '../../utils/db';
-import { users } from '../../database/schema';
+import { db } from '~~/server/utils/db';
+import { users } from '~~/server/database/schema';
 
 export default defineEventHandler(async (event) => {
   // 1. Read the incoming data

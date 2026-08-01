@@ -1,5 +1,5 @@
-import { db } from '../../utils/db';
-import { insights } from '../../database/schema';
+import { db } from '~~/server/utils/db';
+import { insights } from '~~/server/database/schema';
 
 // Helper to generate a URL-friendly slug from the title
 function generateSlug(title: string) {
