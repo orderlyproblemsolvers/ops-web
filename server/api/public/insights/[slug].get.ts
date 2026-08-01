@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
-import { db } from '../~~/server/utils/db';
-import { insights } from '../~~/server/database/schema';
+import { db } from '~~/server/utils/db';
+import { insights } from '~~/server/database/schema';
 
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug;

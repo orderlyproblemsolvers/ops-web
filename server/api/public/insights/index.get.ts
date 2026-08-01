@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
-import { db } from '../~~/server/utils/db';
-import { insights } from '../~~/server/database/schema';
+import { db } from '~~/server/utils/db';
+import { insights } from '~~/server/database/schema';
 
 export default defineEventHandler(async () => {
   // Fetch only published posts, omitting the heavy HTML content for the list view
