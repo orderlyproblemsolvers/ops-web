@@ -33,6 +33,9 @@ export default defineNuxtConfig({
     }
   },
   modules: ['@nuxt/image', '@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-auth-utils', 'nuxt-gtag', '@nuxtjs/google-fonts', '@nuxt/fonts'],
+  image: {
+    domains: ['res.cloudinary.com'],
+  },
   css: ['~/assets/css/main.css'],
   vite: {
   optimizeDeps: {
