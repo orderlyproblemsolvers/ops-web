@@ -1,18 +1,30 @@
 <template>
   <div class="max-w-5xl mx-auto pb-20">
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between mb-8 pb-6 border-b border-gray-200 dark:border-divider">
       <div>
-        <NuxtLink to="/admin/insights" class="text-[13px] text-gray-500 hover:text-gray-900 dark:hover:text-white mb-2 inline-flex items-center gap-1 transition-colors">
+        <NuxtLink to="/admin/insights" class="admin-back-link">
           <UIcon name="i-lucide-arrow-left" class="w-4 h-4" /> Back to Insights
         </NuxtLink>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Insight</h1>
+        <p class="admin-eyebrow">Content workspace</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-text-primary">Create New Insight</h1>
+        <p class="text-sm text-gray-500 dark:text-text-secondary mt-1">Draft a new article, guide, or report for your insights library.</p>
       </div>
-      <div class="flex items-center gap-3">
-        <UButton color="secondary" @click="savePost(true)" :loading="isSaving">Publish</UButton>
+      <div class="flex items-center gap-2 shrink-0">
+        <UButton color="neutral" variant="outline" @click="savePost(false)" :loading="isSaving">Save Draft</UButton>
+        <UButton color="primary" @click="savePost(true)" :loading="isSaving">Publish</UButton>
       </div>
     </div>
 
-    <div class="space-y-6">
+    <div class="space-y-5">
+      <section class="admin-panel">
+        <div class="admin-panel-heading">
+          <div>
+            <h2>Article details</h2>
+            <p>Set the title, classification, and summary shown across the site.</p>
+          </div>
+          <UIcon name="i-lucide-file-pen-line" class="w-5 h-5 text-accent" />
+        </div>
+
       <UInput 
         v-model="post.title"
         variant="subtle" 
@@ -21,21 +33,21 @@
         :highlight="false"
         placeholder="Post Title..." 
         class="text-xl font-bold font-sans w-full"
-        :ui="{ base: 'rounded-lg p-4 border-0 border-b border-gray-200 dark:border-gray-800 rounded-none px-0 focus:ring-0 text-3xl bg-transparent dark:text-white' }"
+        :ui="{ base: 'rounded-input border border-gray-200 dark:border-divider px-3.5 py-3 focus:ring-2 focus:ring-accent/20 text-2xl bg-gray-50 dark:bg-ops-surface dark:text-white' }"
       />
 
-      <UFormField label="Cover Image">
+      <UFormField label="Cover image" class="pt-1">
         <div v-if="post.coverImage" class="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 h-64 w-full">
           <img :src="post.coverImage" alt="Cover" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
-            <UButton color="error" variant="soft" icon="i-lucide-trash-2" @click="post.coverImage = ''">
+            <UButton color="error" variant="soft" icon="i-lucide-trash-2" @click="setCoverImageEmpty">
               Remove Image
             </UButton>
           </div>
         </div>
-        <div 
-          v-else 
-          class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-gray-400 dark:hover:border-gray-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-800/50" 
+        <div
+          v-else
+          class="flex flex-col items-center justify-center w-full h-40 border border-dashed border-gray-300 dark:border-divider rounded-card hover:border-accent/60 dark:hover:border-accent/60 transition-colors cursor-pointer bg-gray-50 dark:bg-ops-surface/60"
           @click="coverFileInput?.click()"
         >
           <div v-if="isUploadingCover" class="flex flex-col items-center">
@@ -62,8 +74,18 @@
       <UFormField label="Excerpt (SEO & Cards)">
         <UTextarea :ui="{base: 'bg-primary'}" v-model="post.excerpt" :rows="2" placeholder="Brief summary of the article..." class="w-full"/>
       </UFormField>
+      </section>
 
-      <div class="min-w-0 w-full border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 shadow-sm focus-within:ring-2 focus-within:ring-accent/20 transition-all text-gray-950 dark:text-gray-100">
+      <section class="admin-panel p-0 overflow-hidden">
+        <div class="admin-panel-heading px-5 pt-5">
+          <div>
+            <h2>Article content</h2>
+            <p>Write and format the body of your insight.</p>
+          </div>
+          <UIcon name="i-lucide-align-left" class="w-5 h-5 text-accent" />
+        </div>
+
+      <div class="min-w-0 w-full border-t border-gray-200 dark:border-divider bg-white dark:bg-ops-black focus-within:ring-2 focus-within:ring-accent/20 transition-all text-gray-950 dark:text-gray-100">
         <UEditor
           ref="editorRef"
           v-slot="{ editor }"
@@ -236,6 +258,7 @@
 
         <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFile" />
       </div>
+      </section>
 
     </div>
   </div>
@@ -321,6 +344,10 @@ const post = ref({
   content: '',
   coverImage: '', // Added cover image field
 })
+
+const setCoverImageEmpty = () => {
+  post.value.coverImage = ''
+}
 
 async function savePost(publish: boolean) {
   if (!post.value.title || !post.value.content) {

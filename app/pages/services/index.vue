@@ -1,7 +1,46 @@
 <template>
   <div class="min-h-svh bg-ops-navy selection:bg-accent selection:text-white">
 
-    <div 
+    <!-- ─── Core Services — the 3 services featured everywhere else on the site ── -->
+    <div class="max-w-300 mx-auto px-5 pt-24 lg:pt-32 pb-16 lg:pb-20">
+      <div class="mb-10 max-w-160">
+        <span class="text-label text-accent block mb-4">Core Services</span>
+        <h1 class="text-[clamp(32px,4vw,48px)] font-bold text-text-primary leading-tight tracking-tight mb-4">
+          What we build, in three parts.
+        </h1>
+        <p class="text-[16px] text-text-secondary leading-relaxed">
+          Everything we do rolls up into these three capabilities. The full catalog below breaks each one down further.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <NuxtLink
+          v-for="service in coreServices"
+          :key="service.headline"
+          :to="service.link"
+          class="group relative flex flex-col p-7 rounded-[20px] bg-white/2 border border-white/5 hover:bg-white/6 hover:border-accent/40 transition-all duration-300"
+        >
+          <div class="icon-well mb-6">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" v-html="service.iconPath" />
+          </div>
+          <h3 class="text-[18px] font-bold text-text-primary mb-2">{{ service.headline }}</h3>
+          <p class="text-[14px] text-text-secondary leading-relaxed mb-6 flex-1">{{ service.body }}</p>
+          <span class="text-[14px] text-accent font-medium inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform duration-300">
+            Explore →
+          </span>
+        </NuxtLink>
+      </div>
+    </div>
+
+    <!-- ─── Full Service Catalog — everything, including the 3 core services ──── -->
+    <div class="max-w-300 mx-auto px-5 pb-6">
+      <div class="pt-8 pb-2 border-t border-white/5">
+        <span class="text-label text-accent block mb-2">Full Service Catalog</span>
+        <p class="text-[14px] text-text-secondary">Every capability, broken down by category.</p>
+      </div>
+    </div>
+
+    <div
       class="sticky z-40 bg-ops-navy/90 backdrop-blur-xl border-b border-white/5 transition-[top] duration-300 ease-in-out"
       :class="isScrollingUp ? 'top-18' : 'top-0'"
     >
@@ -9,11 +48,11 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-5 md:py-0 md:h-18">
 
           <div class="flex items-center gap-4 shrink-0">
-            <span class="text-label text-accent">Our Services</span>
+            <span class="text-label text-accent">Category</span>
             <span class="hidden md:block w-px h-3 bg-white/20" />
-            <h1 class="hidden md:block text-[14px] font-medium text-text-secondary">
+            <h2 class="hidden md:block text-[14px] font-medium text-text-secondary">
               {{ activeCategory.label }}
-            </h1>
+            </h2>
           </div>
 
           <div
@@ -93,8 +132,7 @@
                   </span>
                 </div>
 
-                <div class="flex items-center justify-between">
-                  <span class="text-[15px] font-semibold text-white">{{ activeCategory.services[0].headline }}</span>
+                <div class="flex items-center justify-end">
                   <span class="text-accent text-[15px] font-medium group-hover:translate-x-1 transition-transform duration-200 inline-flex items-center gap-1">
                     Explore →
                   </span>
@@ -144,7 +182,7 @@
               to="/contact"
               class="shrink-0 inline-flex items-center gap-2 text-[14px] font-medium text-accent hover:text-white transition-colors duration-200 group"
             >
-              Talk to us
+              Start a conversation
               <span class="group-hover:translate-x-0.5 transition-transform duration-200">→</span>
             </NuxtLink>
           </div>
@@ -171,6 +209,34 @@ defineOgImage('OpsTemplate',{
   badge: 'Services'
 })
 
+// ─── Core Services — the 3 services featured on the homepage/hero ────────────
+const icons = {
+  stack: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />',
+  globe: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />',
+  bolt: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />',
+}
+
+const coreServices = [
+  {
+    headline: 'ERP, LMS & MIS',
+    body: 'Unified systems for running the business — enterprise resource planning, learning management, and management information systems.',
+    link: '/services/software',
+    iconPath: icons.stack,
+  },
+  {
+    headline: 'Web & App Development',
+    body: 'Websites and applications designed and engineered end to end — fast, accessible, and built to convert.',
+    link: '/services/digital/web-design-development',
+    iconPath: icons.globe,
+  },
+  {
+    headline: 'Workflow Automation',
+    body: 'Repeatable, judgment-based tasks turned into automated processes that run without a person watching.',
+    link: '/services/ai/intelligent-automation',
+    iconPath: icons.bolt,
+  },
+]
+
 // --- Tab Logic ---
 const activeIndex = ref(0)
 const setActive = (i: number) => { activeIndex.value = i }
@@ -184,13 +250,13 @@ let lastScrollPosition = 0
 
 const handleScroll = () => {
   const currentScroll = window.scrollY
-  
+
   if (currentScroll <= 72) {
     isScrollingUp.value = true
   } else {
     isScrollingUp.value = currentScroll < lastScrollPosition
   }
-  
+
   lastScrollPosition = currentScroll
 }
 

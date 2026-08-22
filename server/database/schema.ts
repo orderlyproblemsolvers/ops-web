@@ -29,7 +29,9 @@ export const enquiries = mysqlTable('enquiries', {
   lastName: varchar('last_name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull(),
   company: varchar('company', { length: 255 }),
-  interest: varchar('interest', { length: 255 }).notNull(),
-  message: text('message').notNull(),
+  // Widened from varchar(255) to text — this now holds a free-text service
+  // description from a textarea, not a short category slug, so it needs
+  // room to grow beyond 255 characters.
+  interest: text('interest').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

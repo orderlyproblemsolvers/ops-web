@@ -32,16 +32,33 @@
 
           <div>
             <label for="password" class="block text-[13px] font-medium text-text-secondary mb-1.5">Password</label>
-            <div class="mt-1">
+            <div class="mt-1 relative">
               <input 
                 id="password" 
                 v-model="password" 
                 name="password" 
-                type="password" 
+                :type="showPassword ? 'text' : 'password'"
                 autocomplete="current-password" 
                 required 
-                class="block w-full appearance-none rounded-[10px] border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-text-tertiary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-[14px] transition-colors" 
+                class="block w-full appearance-none rounded-[10px] border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white placeholder-text-tertiary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent sm:text-[14px] transition-colors" 
               />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 text-text-secondary hover:text-white transition-colors"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                @click="showPassword = !showPassword"
+              >
+                <svg v-if="!showPassword" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.5-6.75 9.75-6.75S21.75 12 21.75 12s-3.5 6.75-9.75 6.75S2.25 12 2.25 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.58 10.58A3 3 0 0 0 13.42 13.42" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.88 5.12A10.84 10.84 0 0 1 12 4.5c6.25 0 9.75 7.5 9.75 7.5a18.4 18.4 0 0 1-3.23 4.18" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.64 6.64A18.4 18.4 0 0 0 2.25 12s3.5 6.75 9.75 6.75c1.31 0 2.56-.2 3.72-.56" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -79,6 +96,7 @@ definePageMeta({
 
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref('')
 

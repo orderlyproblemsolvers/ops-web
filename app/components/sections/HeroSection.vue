@@ -4,89 +4,72 @@
     <div class="grain" aria-hidden="true" />
     <div class="dot-grid dot-grid--left" aria-hidden="true" />
     <div class="dot-grid dot-grid--right" aria-hidden="true" />
-    
+
     <div
       class="absolute top-0 left-1/2 -translate-x-1/2 w-225 h-150 pointer-events-none z-0 animate-pulse-slow"
-      style="background: radial-gradient(ellipse at 50% 40%, rgba(17,138,178,0.12) 0%, transparent 65%);"
+      style="background: radial-gradient(ellipse at 50% 40%, rgba(17,138,178,0.10) 0%, transparent 65%);"
     />
 
     <div class="relative z-20 w-full max-w-300 mx-auto px-5 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
 
       <div class="lg:col-span-6 text-center lg:text-left flex flex-col items-center lg:items-start opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
-        
-        <h1 
+
+        <h1
           class="text-[clamp(40px,5vw,56px)] leading-[1.05] font-bold tracking-tight text-text-primary mb-5"
         >
-          Run your business with precision.
+          Structure for the way you actually work.
         </h1>
 
-        <p 
+        <p
           class="text-[15px] lg:text-body text-text-secondary max-w-lg lg:max-w-none mb-6 leading-relaxed font-medium"
         >
-          We architect custom software systems and integrate intelligent automation to accelerate critical workflows and eliminate operational friction.
+          We build the systems, sites, and automations that run your business — so your team spends less time managing tools and more time doing the work that matters.
         </p>
 
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <AppButton 
-            to="/contact" 
-            variant="primary" 
-            size="md" 
+          <AppButton
+            to="/contact"
+            variant="primary"
+            size="md"
             class="w-full sm:w-auto"
-            @click="emit('cta-click', { label: 'Start Project', destination: '/contact' })"
+            @click="emit('cta-click', { label: 'Start a conversation', destination: '/contact' })"
           >
-            Schedule Consultation →
+            Start a conversation →
           </AppButton>
-          <AppButton 
-            to="/services" 
-            variant="ghost" 
-            size="md" 
+          <AppButton
+            to="/services"
+            variant="ghost"
+            size="md"
             class="w-full sm:w-auto"
-            @click="emit('cta-click', { label: 'Explore Services', destination: '/services' })"
+            @click="emit('cta-click', { label: 'See what we build', destination: '/services' })"
           >
-            Explore Capabilities
+            See what we build
           </AppButton>
         </div>
       </div>
 
       <div class="lg:col-span-6 w-full max-w-lg mx-auto lg:max-w-none lg:pl-8 opacity-0 animate-fade-up" style="animation-delay: 300ms; animation-fill-mode: forwards;">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          
-          <NuxtLink to="/services/software" class="group relative flex items-center justify-between p-5 rounded-[16px] bg-white/2 border border-white/5 hover:bg-white/6 hover:border-accent/40 transition-all duration-300">
-            <div class="flex-1 pr-4">
-              <h3 class="text-[16px] font-bold text-text-primary mb-1.5">Custom Software</h3>
-              <p class="text-[13px] text-text-secondary leading-snug">Enterprise apps & internal tools.</p>
-            </div>
-            <svg class="w-4 h-4 text-accent/50 group-hover:text-accent transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M7 7h10v10"></path>
-            </svg>
-          </NuxtLink>
+        <div class="grid grid-cols-1 gap-4">
 
-          <NuxtLink to="/services/ai" class="group relative flex items-center justify-between p-5 rounded-[16px] bg-white/2 border border-white/5 hover:bg-white/6 hover:border-accent/40 transition-all duration-300">
-            <div class="flex-1 pr-4">
-              <h3 class="text-[16px] font-bold text-text-primary mb-1.5">AI & Data</h3>
-              <p class="text-[13px] text-text-secondary leading-snug">Automation & LLM integration.</p>
+          <NuxtLink
+            v-for="service in services"
+            :key="service.headline"
+            :to="service.link"
+            class="group relative flex items-center gap-4 p-2 rounded-[16px] bg-mint hover:bg-mint/90 border border-black/5 hover:border-accent/40 active:bg-mint/90 active:border-accent/40 transition-all duration-300"
+          >
+            <div class="image-well shrink-0">
+              <img :src="service.image" :alt="`${service.headline} icon`" class="w-12 h-12 object-contain" />
             </div>
-            <svg class="w-4 h-4 text-accent/50 group-hover:text-accent transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M7 7h10v10"></path>
-            </svg>
-          </NuxtLink>
 
-          <NuxtLink to="/services/consulting" class="group relative flex items-center justify-between p-5 rounded-[16px] bg-white/2 border border-white/5 hover:bg-white/6 hover:border-accent/40 transition-all duration-300">
-            <div class="flex-1 pr-4">
-              <h3 class="text-[16px] font-bold text-text-primary mb-1.5">Strategic Consulting</h3>
-              <p class="text-[13px] text-text-secondary leading-snug">Technical auditing & design.</p>
+            <div class="flex-1">
+              <h3 class="text-[16px] font-bold text-gray-900 mb-1">{{ service.headline }}</h3>
+              <p class="text-[13px] text-gray-600 leading-snug">{{ service.body }}</p>
             </div>
-            <svg class="w-4 h-4 text-accent/50 group-hover:text-accent transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M7 7h10v10"></path>
-            </svg>
-          </NuxtLink>
 
-          <NuxtLink to="/services/digital" class="group relative flex items-center justify-between p-5 rounded-[16px] bg-white/2 border border-white/5 hover:bg-white/6 hover:border-accent/40 transition-all duration-300">
-            <div class="flex-1 pr-4">
-              <h3 class="text-[16px] font-bold text-text-primary mb-1.5">Digital Presence</h3>
-              <p class="text-[13px] text-text-secondary leading-snug">Corporate webs & UI/UX.</p>
-            </div>
-            <svg class="w-4 h-4 text-accent/50 group-hover:text-accent transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              class="w-4 h-4 text-accent/60 group-hover:text-accent group-hover:translate-x-1 group-hover:-translate-y-1 group-active:text-accent group-active:translate-x-1 group-active:-translate-y-1 transform transition-all duration-300 shrink-0"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M7 7h10v10"></path>
             </svg>
           </NuxtLink>
@@ -104,6 +87,29 @@ import AppButton from '../ui/AppButton.vue'
 const emit = defineEmits<{
   'cta-click': [payload: { label: string; destination: string }]
 }>()
+
+// ─── Services — mirrors the redesigned 3-service structure site-wide ────────
+// image: user-provided SVG illustrations, distinct from the card's mint background
+const services = [
+  {
+    headline: 'ERP, LMS & MIS',
+    body: 'Unified systems for running the business.',
+    link: '/services/software',
+    image: '/img/erp.svg',
+  },
+  {
+    headline: 'Web & App Development',
+    body: 'Sites and apps built end to end.',
+    link: '/services/digital/web-design-development',
+    image: '/img/web.svg',
+  },
+  {
+    headline: 'Workflow Automation',
+    body: 'Repeatable tasks, running without a person watching.',
+    link: '/services/ai/intelligent-automation',
+    image: '/img/automate.svg',
+  },
+]
 </script>
 
 <style scoped>
@@ -150,6 +156,17 @@ const emit = defineEmits<{
   -webkit-mask-composite: source-in;
 }
 
+/* Icon well — background distinct from the mint card behind it */
+.image-well {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-icon, 12px);
+  background: var(--color-ops-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ─── Animations ─────────────────────────────────────────────────────────── */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
@@ -160,13 +177,14 @@ const emit = defineEmits<{
   animation: fade-up 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+/* Subtler, slower glow — settles instead of pulsing indefinitely at high amplitude */
 .animate-pulse-slow {
-  animation: glow-pulse 8s ease-in-out infinite alternate;
+  animation: glow-pulse 14s ease-in-out infinite alternate;
 }
 
 @keyframes glow-pulse {
-  from { opacity: 0.6; }
-  to   { opacity: 1; }
+  from { opacity: 0.75; }
+  to   { opacity: 0.95; }
 }
 
 @media (prefers-reduced-motion: reduce) {

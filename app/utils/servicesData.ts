@@ -225,7 +225,7 @@ const softwareCategory: ServiceCategory = {
         },
         {
           title:       'Approval Workflows',
-          description: 'Large deals require sign-off? Route proposals through internal approval chains before they reach the client.',
+          description: 'For deals that require sign-off, proposals route through internal approval chains before reaching the client.',
           icon:        icons.shield,
         },
       ],
@@ -245,7 +245,7 @@ const analyticsCategory: ServiceCategory = {
       slug:         'business-intelligence',
       link:         '/services/analytics/business-intelligence',
       headline:     'Business Intelligence.',
-      subheadline:  'Turn your data into decisions.',
+      subheadline:  'See your data clearly.',
       body:         'Most businesses are swimming in data and starving for insight. We build BI platforms that pull from every system you operate — sales, finance, ops, HR — and surface the patterns that drive better decisions, faster.',
       tags:         ['BI Platforms', 'Dashboards', 'Reporting', 'KPIs'],
       iconPath:     icons.chart,
@@ -771,7 +771,7 @@ const aiCategory: ServiceCategory = {
       link:         '/services/ai/data-strategy',
       headline:     'Data & AI Strategy.',
       subheadline:  'A data foundation worth building on.',
-      body:         'AI is only as good as the data underneath it. Before investing in models, organisations need a coherent data strategy — clear ownership, reliable pipelines, governed storage, and the analytical infrastructure to turn data into decisions. We build that foundation.',
+      body:         'AI is only as good as the data underneath it. Before investing in models, organisations need a coherent data strategy — clear ownership, reliable pipelines, governed storage, and the reliable foundation that everything else — dashboards, AI, automation — gets built on. We build that foundation.',
       tags:         ['Data Strategy', 'Data Architecture', 'Governance', 'Pipelines'],
       iconPath:     icons.chart,
       capabilities: [
@@ -1017,7 +1017,7 @@ const educationCategory: ServiceCategory = {
           icon:        icons.chart,
         },
         {
-          title:       'Cohort & Cohort Management',
+          title:       'Bulk Registration & Cohort Management',
           description: 'Manage examination cohorts, bulk registration, results processing, and certificate distribution for large candidate groups.',
           icon:        icons.users,
         },

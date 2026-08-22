@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-svh bg-white pt-10 lg:pt-32 pb-[80px] lg:pb-35 selection:bg-accent selection:text-white">
+  <div class="min-h-svh bg-mint pt-10 lg:pt-32 pb-[80px] lg:pb-35 selection:bg-accent selection:text-white">
     <div class="max-w-300 mx-auto px-5">
 
-      <div class="mb-10 md:mb-14 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
+      <div class="mb-4 md:mb-14 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
         <h2 class="text-[12px] font-bold text-accent uppercase tracking-widest mb-4">
           Insights & Updates
         </h2>
@@ -14,9 +14,10 @@
         </p>
       </div>
 
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-10 opacity-0 animate-fade-up" style="animation-delay: 200ms; animation-fill-mode: forwards;">
+      <!-- Filters — de-emphasized relative to the headline above: smaller, muted, quieter -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 opacity-0 animate-fade-up" style="animation-delay: 200ms; animation-fill-mode: forwards;">
 
-        <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 md:pb-0" role="tablist">
+        <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-2 md:pb-0" role="tablist">
           <button
             v-for="category in categories"
             :key="category"
@@ -24,27 +25,27 @@
             :aria-selected="selectedCategory === category"
             @click="selectedCategory = category"
             :class="[
-              'relative shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-all duration-200 outline-none',
+              'relative shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium transition-all duration-200 outline-none',
               selectedCategory === category
-                ? 'bg-accent text-white'
-                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100 border border-gray-200',
+                ? 'bg-accent/90 text-white'
+                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 border border-gray-200/70',
             ]"
           >
             {{ category }}
           </button>
         </div>
 
-        <div class="relative w-full md:w-64 shrink-0">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative w-full md:w-56 shrink-0">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <input
-            v-model="searchQuery"
+            v-model="searchInput"
             type="text"
             placeholder="Search insights..."
-            class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[14px] rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-accent/50 focus:bg-white transition-all duration-200 placeholder:text-gray-400"
+            class="w-full bg-transparent border border-gray-200/70 text-gray-700 text-[13px] rounded-full pl-9 pr-4 py-2 focus:outline-none focus:border-accent/40 focus:bg-white transition-all duration-200 placeholder:text-gray-300"
           />
         </div>
       </div>
@@ -89,9 +90,9 @@
           </div>
           <h3 class="text-base font-semibold text-gray-900 mb-2">No insights found</h3>
           <p class="text-[14px] text-gray-500 max-w-sm">
-            {{ searchQuery ? `Nothing matching "${searchQuery}".` : "We're preparing our first set of insights. Check back soon." }}
+            {{ searchInput ? `Nothing matching "${searchInput}".` : "We're preparing our first set of insights. Check back soon." }}
           </p>
-          <button v-if="searchQuery || selectedCategory !== 'All'" @click="resetFilters" class="mt-5 text-[13px] font-medium text-accent hover:text-gray-900 transition-colors">
+          <button v-if="searchInput || selectedCategory !== 'All'" @click="resetFilters" class="mt-5 text-[13px] font-medium text-accent hover:text-gray-900 transition-colors">
             Clear filters
           </button>
         </div>
@@ -101,16 +102,20 @@
           <!-- Featured cards -->
           <div v-if="featuredPosts.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
             <NuxtLink
-              v-for="post in featuredPosts"
+              v-for="(post, index) in featuredPosts"
               :key="post.id"
               :to="`/insights/${post.slug}`"
               class="group relative bg-white border border-gray-200 rounded-[16px] flex flex-col hover:border-accent/30 transition-colors duration-300 overflow-hidden"
             >
               <div class="h-44 w-full overflow-hidden relative border-b border-gray-100 shrink-0">
-                <img
+                <NuxtImg
                   v-if="post.coverImage"
                   :src="post.coverImage"
                   :alt="post.title"
+                  :loading="index === 0 ? 'eager' : 'lazy'"
+                  format="webp"
+                  width="640"
+                  height="352"
                   class="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
                 />
                 <div v-else class="absolute inset-0 bg-gray-50 flex items-center justify-center">
@@ -130,7 +135,7 @@
                   </span>
                 </div>
 
-                <h2 class="text-[17px] md:text-[19px] font-bold text-gray-900 mb-2 leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2">
+                <h2 class="text-body md:text-[19px] font-bold text-gray-900 mb-2 leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2">
                   {{ post.title }}
                 </h2>
 
@@ -147,7 +152,7 @@
             </NuxtLink>
           </div>
 
-          <!-- Older posts list -->
+          <!-- Older posts list — capped, with Load more -->
           <div v-if="olderPosts.length > 0" class="flex flex-col">
             <h3 class="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-5 pl-1">
               Previous Insights
@@ -155,16 +160,20 @@
 
             <div class="flex flex-col gap-2">
               <NuxtLink
-                v-for="post in olderPosts"
+                v-for="post in visibleOlderPosts"
                 :key="post.id"
                 :to="`/insights/${post.slug}`"
                 class="group flex items-center gap-4 sm:gap-6 p-3 rounded-[14px] hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all duration-200"
               >
                 <div class="w-18 h-18 sm:w-22 sm:h-22 rounded-xl overflow-hidden relative shrink-0 border border-gray-200 bg-gray-50">
-                  <img
+                  <NuxtImg
                     v-if="post.coverImage"
                     :src="post.coverImage"
                     :alt="post.title"
+                    loading="lazy"
+                    format="webp"
+                    width="176"
+                    height="176"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
                   <div v-else class="absolute inset-0 flex items-center justify-center">
@@ -185,11 +194,21 @@
                     </span>
                   </div>
 
-                  <h3 class="text-[15px] sm:text-[17px] font-semibold text-gray-900 leading-snug group-hover:text-accent transition-colors duration-200 line-clamp-2">
+                  <h3 class="text-[15px] sm:text-body font-semibold text-gray-900 leading-snug group-hover:text-accent transition-colors duration-200 line-clamp-2">
                     {{ post.title }}
                   </h3>
                 </div>
               </NuxtLink>
+            </div>
+
+            <!-- Load more — caps initial DOM/render size instead of rendering the full archive -->
+            <div v-if="hasMoreOlderPosts" class="flex justify-center mt-8">
+              <button
+                @click="visibleOlderCount += PAGE_SIZE"
+                class="text-[13px] font-medium text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300 rounded-full px-5 py-2.5 transition-colors duration-200"
+              >
+                Load more ({{ olderPosts.length - visibleOlderPosts.length }} remaining)
+              </button>
             </div>
           </div>
 
@@ -200,7 +219,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
+
+// Declares this page's light-background header, replacing the old
+// hardcoded `lightBgRoutes` list that used to live in Header.vue.
+definePageMeta({
+  headerTheme: 'light',
+})
 
 useSeoMeta({
   title: 'Insights',
@@ -213,9 +238,28 @@ defineOgImage('OpsTemplate', {
   badge: 'Insights'
 })
 
-const { data: posts, status } = useFetch('/api/public/insights')
+// Explicit cache key so Nuxt can dedupe/reuse this fetch across navigations
+// (e.g. visiting a post then hitting back) instead of refetching every time.
+const { data: posts, status } = useFetch('/api/public/insights', {
+  key: 'insights',
+})
 
-const searchQuery = ref('')
+// ─── Search — debounced so filtering doesn't recompute on every keystroke ───
+const searchInput = ref('')       // bound to the input, updates immediately for a responsive field
+const searchQuery = ref('')       // used for actual filtering, updated after a short delay
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(searchInput, (val) => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    searchQuery.value = val
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+})
+
 const selectedCategory = ref('All')
 const categories = ['All', 'Strategy', 'Engineering', 'Data & AI', 'Design', 'Company']
 
@@ -238,7 +282,19 @@ const filteredPosts = computed(() => {
 const featuredPosts = computed(() => filteredPosts.value.slice(0, 2))
 const olderPosts = computed(() => filteredPosts.value.slice(2))
 
+// ─── Pagination for older posts ──────────────────────────────────────────────
+const PAGE_SIZE = 6
+const visibleOlderCount = ref(PAGE_SIZE)
+const visibleOlderPosts = computed(() => olderPosts.value.slice(0, visibleOlderCount.value))
+const hasMoreOlderPosts = computed(() => visibleOlderCount.value < olderPosts.value.length)
+
+// Reset pagination whenever the filtered set changes (new search/category)
+watch([selectedCategory, searchQuery], () => {
+  visibleOlderCount.value = PAGE_SIZE
+})
+
 function resetFilters() {
+  searchInput.value = ''
   searchQuery.value = ''
   selectedCategory.value = 'All'
 }
@@ -251,6 +307,7 @@ function formatDate(dateString: string) {
     year: 'numeric'
   }).format(new Date(dateString))
 }
+
 </script>
 
 <style scoped>

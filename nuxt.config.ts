@@ -32,16 +32,7 @@ export default defineNuxtConfig({
       ]
     }
   },
-  modules: [
-    '@nuxt/image',
-    '@nuxt/ui',
-    '@nuxtjs/seo',
-    '@vueuse/nuxt',
-    'nuxt-auth-utils',
-    'nuxt-seo-utils',
-    'nuxt-gtag',
-    '@nuxtjs/google-fonts'
-  ],
+  modules: ['@nuxt/image', '@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-auth-utils', 'nuxt-gtag', '@nuxtjs/google-fonts', '@nuxt/fonts'],
   css: ['~/assets/css/main.css'],
   vite: {
   optimizeDeps: {

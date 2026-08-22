@@ -9,7 +9,7 @@
       @cta-click="handleCtaClick"
     />
 
-    <div ref="statsRef"><StatsRow /></div>
+    <div ref="statsRef"><Clients /></div>
     <div ref="servicesRef"><ServicesGrid @service-click="handleServiceClick" /></div>
     <div ref="caseStudyRef"><FeaturedCaseStudy /></div>
     <div ref="testimonialsRef"><TestimonialsBlock /></div>
@@ -20,8 +20,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import HeroSection from '~/components/sections/HeroSection.vue'
-import StatsRow from '~/components/sections/StatsRow.vue'
-import ValueStrip from '~/components/sections/ValueStrip.vue'
+import Clients from '~/components/sections/Clients.vue'
 import ServicesGrid from '~/components/sections/ServicesGrid.vue'
 import FeaturedCaseStudy from '~/components/sections/FeaturedCaseStudy.vue'
 import TestimonialsBlock from '~/components/sections/TestimonialsBlock.vue'
@@ -41,7 +40,7 @@ useHead({
           "@type": "ContactPoint",
           "telephone": "+234-901-8099-785",
           "contactType": "customer service",
-          "email": "orderlyproblemsolvers@gmail.com",
+          "email": "support@orderlyproblemsolvers.com",
           "availableLanguage": "English"
         }
       })

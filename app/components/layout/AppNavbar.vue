@@ -1,13 +1,20 @@
 <template>
   <header
     :class="[
-      'fixed top-0 left-0 right-0 z-9000 transition-all duration-300 ease-out',
+      'fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out',
       isScrolled || isLightBg
         ? 'bg-ops-navy/85 backdrop-blur-xl border-b border-white/6 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
         : 'bg-transparent border-b border-transparent',
-      hideHeader && !mobileOpen ? '-translate-y-full' : 'translate-y-0',
     ]"
   >
+    <!-- Skip link — visually hidden until focused, first focusable element on the page -->
+    <a
+      href="#main-content"
+      class="skip-link"
+    >
+      Skip to content
+    </a>
+
     <div
       :class="[
         'w-full max-w-300 mx-auto px-6 flex items-center justify-between gap-8 transition-all duration-300 ease-out',
@@ -26,7 +33,7 @@
           alt="OPS Logo"
           :class="[
             'w-auto object-contain invert transition-all duration-300 ease-out',
-            isScrolled || isLightBg ? 'h-12' : 'h-22',
+            isScrolled || isLightBg ? 'h-14' : 'h-20',
           ]"
           preload
           fetchpriority="high"
@@ -42,15 +49,15 @@
           v-for="link in navLinks"
           :key="link.to"
           :to="link.to"
-          class="relative px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors duration-150"
+          class="relative px-3 py-2 text-[13px] font-medium rounded-md transition-colors duration-150"
           :class="isActive(link.to)
             ? 'text-text-primary'
             : 'text-text-secondary hover:text-text-primary'"
         >
           {{ link.label }}
           <span
-            v-if="isActive(link.to)"
-            class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-0.75 h-0.75 rounded-full bg-accent"
+            class="nav-underline"
+            :class="isActive(link.to) ? 'nav-underline--active' : ''"
           />
         </NuxtLink>
       </nav>
@@ -58,7 +65,7 @@
       <!-- Desktop CTA -->
       <div class="hidden md:flex items-center shrink-0">
         <AppButton to="/contact" variant="primary" size="sm">
-          Get Started
+          Start a conversation
         </AppButton>
       </div>
 
@@ -92,14 +99,11 @@
             v-for="link in navLinks"
             :key="link.to"
             :to="link.to"
-            class="flex items-center justify-between py-3.5 text-[16px] font-medium border-b border-white/6 last:border-0 transition-colors duration-150"
+            class="py-3.5 text-[16px] font-medium border-b border-white/6 last:border-0 transition-colors duration-150"
             :class="isActive(link.to) ? 'text-text-primary' : 'text-text-secondary'"
             @click="mobileOpen = false"
           >
             {{ link.label }}
-            <svg class="w-4 h-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 18l6-6-6-6" />
-            </svg>
           </NuxtLink>
 
           <div class="pt-5 pb-1">
@@ -110,7 +114,7 @@
               class="w-full"
               @click="mobileOpen = false"
             >
-              Get Started
+              Start a conversation
             </AppButton>
           </div>
         </nav>
@@ -120,30 +124,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppButton from '../ui/AppButton.vue'
 
 const route      = useRoute()
 const isScrolled = ref(false)
 const mobileOpen = ref(false)
-const hideHeader = ref(false)
 
-// Routes that have a white/light background — header must never be transparent on these
-const lightBgRoutes = ['/insights']
-const isLightBg = computed(() => lightBgRoutes.some(r => route.path.startsWith(r)))
-
-// Track breakpoint reactively so resize events don't cause stale isMobile reads
-const isMobile = ref(false)
-
-let lastScrollY   = 0
-let ticking       = false        // rAF gate — prevents handler firing faster than paint
-const HIDE_THRESHOLD = 60        // must scroll this far from top before hide can engage
-const DELTA          = 8         // minimum px difference to register as intentional direction
+// Light-background pages declare this themselves via:
+//   definePageMeta({ headerTheme: 'light' })
+// instead of maintaining a hardcoded route list here that goes stale.
+const isLightBg = computed(() => route.meta?.headerTheme === 'light')
 
 const navLinks = [
-  { label: 'Services',  to: '/services'     },
-  { label: 'Solutions', to: '/case-studies' },
+  { label: 'Services', to: '/services'     },
+  { label: 'Work',      to: '/case-studies' },
   { label: 'About',     to: '/about'        },
   { label: 'Insights',  to: '/insights'     },
 ]
@@ -151,71 +147,64 @@ const navLinks = [
 const isActive = (to: string) =>
   to === '/' ? route.path === '/' : route.path.startsWith(to)
 
-const updateScrollState = () => {
-  const currentY = window.scrollY
-
-  isScrolled.value = currentY > 20
-
-  if (isMobile.value && !mobileOpen.value) {
-    if (currentY < HIDE_THRESHOLD) {
-      // Always show near the top regardless of direction
-      hideHeader.value = false
-    } else if (currentY - lastScrollY > DELTA) {
-      // Scrolling DOWN by more than delta → hide
-      hideHeader.value = true
-    } else if (lastScrollY - currentY > DELTA) {
-      // Scrolling UP by more than delta → reveal
-      hideHeader.value = false
-    }
-    // Within delta — do nothing, avoids flickering on tiny jitter
-  } else {
-    hideHeader.value = false
-  }
-
-  lastScrollY = currentY
-  ticking = false
-}
-
 const handleScroll = () => {
-  // rAF gate: only schedule one update per animation frame
-  if (!ticking) {
-    requestAnimationFrame(updateScrollState)
-    ticking = true
-  }
+  isScrolled.value = window.scrollY > 20
 }
-
-const handleResize = () => {
-  isMobile.value = window.innerWidth < 768
-  // If resized to desktop while header was hidden, reveal it immediately
-  if (!isMobile.value) hideHeader.value = false
-}
-
-watch(() => route.path, () => {
-  mobileOpen.value = false
-  hideHeader.value = false
-})
-
-watch(mobileOpen, (val) => {
-  document.body.style.overflow = val ? 'hidden' : ''
-  if (val) hideHeader.value = false
-})
 
 onMounted(() => {
-  lastScrollY  = window.scrollY
-  isMobile.value = window.innerWidth < 768
+  handleScroll()
   window.addEventListener('scroll', handleScroll, { passive: true })
-  window.addEventListener('resize', handleResize, { passive: true })
-  updateScrollState()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
-  window.removeEventListener('resize', handleResize)
-  document.body.style.overflow = ''
+})
+
+// Lock body scroll while the mobile menu is open
+import { watch } from 'vue'
+watch(mobileOpen, (val) => {
+  document.body.style.overflow = val ? 'hidden' : ''
+})
+watch(() => route.path, () => {
+  mobileOpen.value = false
 })
 </script>
 
 <style scoped>
+/* ─── Skip link ───────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--color-accent);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+/* ─── Active nav underline ───────────────────────────────────────────────── */
+.nav-underline {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms var(--ease-out);
+}
+.nav-underline--active {
+  transform: scaleX(1);
+}
+
 /* ─── Hamburger → X morph ─────────────────────────────────────────────────── */
 .hamburger-icon {
   display: flex;
@@ -274,7 +263,8 @@ onUnmounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .hamburger-icon span,
   .mobile-menu-enter-active,
-  .mobile-menu-leave-active {
+  .mobile-menu-leave-active,
+  .nav-underline {
     transition: none;
   }
 }

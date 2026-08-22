@@ -13,10 +13,10 @@
 
       <div class="relative z-10 max-w-300 mx-auto px-6 py-16 md:py-20 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
         <div class="max-w-130">
-          <p class="text-label text-accent mb-3">Ready to transform how you operate?</p>
+          <p class="text-label text-accent mb-3">Ready to get started?</p>
           <h2 class="text-[clamp(26px,3.5vw,44px)] font-bold text-text-primary tracking-tight leading-tight">
-            Tell us what you're building.<br class="hidden md:block" />
-            We'll show you how to get there.
+            Tell us what you need.<br class="hidden md:block" />
+            We'll help you build it.
           </h2>
         </div>
 
@@ -25,7 +25,7 @@
             to="/contact"
             class="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-[15px] font-medium px-6 py-3 rounded-full transition-colors duration-200"
           >
-            Start the conversation
+            Start a conversation
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -43,7 +43,7 @@
 
     <div class="relative z-10 max-w-300 mx-auto px-6 pt-14 pb-8">
       <div class="grid grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1fr_1fr] gap-x-8 gap-y-12 mb-12">
-        
+
         <div class="col-span-2 md:col-span-1">
           <NuxtLink to="/" class="inline-block mb-5" aria-label="OPS — Home">
             <NuxtImg
@@ -56,7 +56,7 @@
           <p class="text-[13px] text-text-tertiary leading-relaxed mb-6 max-w-60">
             The complete operating system for your business.
           </p>
-          
+
           <div class="flex items-center gap-3">
             <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Follow us on X">
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@
         <div>
           <h4 class="footer-heading">Contact</h4>
           <ul class="footer-list">
-            <li><a href="mailto:orderlyproblemsolvers@gmail.com" class="footer-link break-all">orderlyproblemsolvers@gmail.com</a></li>
+            <li><a href="mailto:support@orderlyproblemsolvers.com" class="footer-link break-all">support@orderlyproblemsolvers.com</a></li>
             <li><a href="tel:+2349018099785" class="footer-link">+234 901-8099-785</a></li>
             <li class="pt-1">
               <NuxtLink to="/contact" class="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:text-accent-hover transition-colors group">

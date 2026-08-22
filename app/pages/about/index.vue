@@ -1,6 +1,6 @@
 <template>
   <div class="relative min-h-svh bg-ops-navy overflow-hidden selection:bg-accent selection:text-white">
-    
+
     <div class="grain" aria-hidden="true" />
     <div class="dot-grid dot-grid--left"  aria-hidden="true" />
     <div class="dot-grid dot-grid--right" aria-hidden="true" />
@@ -12,18 +12,35 @@
     <div class="relative z-10 max-w-225 mx-auto px-5 pt-10 lg:pt-45 pb-[80px] lg:pb-35">
 
       <div class="mb-20 md:mb-32 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
-        
+
         <h2 class="text-[13px] font-bold text-accent uppercase tracking-widest mb-8">
           About
         </h2>
 
         <div class="space-y-6 text-subheading text-text-secondary leading-relaxed font-medium tracking-tight">
           <p class="text-text-primary">
-            Orderly Problem Solvers is a technology-driven organization founded in 2025 by <a href="https://www.instagram.com/inikoriefe/" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-white underline decoration-accent/40 hover:decoration-white underline-offset-4 transition-colors duration-300">Inikori Efe</a>. We are focused on bringing structure to complexity through the design and deployment of intelligent digital solutions, supported by the hardware and infrastructure required for real-world impact.
+            Orderly Problem Solvers is a technology-driven organization founded in 2025 by
+            <a href="https://www.instagram.com/inikoriefe/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-accent hover:text-white underline decoration-accent/40 hover:decoration-white underline-offset-4 transition-colors duration-300 align-middle">
+              <img
+                src="/img/founder.png"
+                alt="Inikori Efe"
+                class="inline-block h-7 w-7 rounded-full object-cover border border-white/15 align-middle"
+                loading="lazy"
+              />
+              Inikori Efe
+            </a>. We are focused on bringing structure to complexity through the design and deployment of intelligent digital solutions, supported by the hardware and infrastructure required for real-world impact.
           </p>
           <p>
             We operate at the intersection of business efficiency and digital inclusion. Our work enables organizations to move from fragmented processes to streamlined, scalable systems, while also expanding access to technology and digital skills in underserved communities.
           </p>
+
+          <!-- Visual break — pull-quote styled callout, interrupts the paragraph block -->
+          <div class="py-4 my-2 border-y border-white/8">
+            <p class="text-[clamp(20px,2.2vw,26px)] font-bold text-accent leading-snug tracking-tight not-italic">
+              Bringing structure to complexity — for established businesses and emerging communities alike.
+            </p>
+          </div>
+
           <p>
             We build custom software solutions that support core business operations, including enterprise systems, data platforms, and process automation tools. Alongside this, we develop and support the infrastructure that powers these systems, ensuring reliability, scalability, and long-term sustainability.
           </p>
@@ -37,31 +54,36 @@
       <div class="w-full h-px bg-white/8 mb-20 md:mb-32 opacity-0 animate-fade-up" style="animation-delay: 200ms; animation-fill-mode: forwards;"></div>
 
       <div class="opacity-0 animate-fade-up" style="animation-delay: 300ms; animation-fill-mode: forwards;">
-        
+
         <h2 class="text-[13px] font-bold text-accent uppercase tracking-widest mb-8">
           Mission
         </h2>
 
-        <div class="space-y-6 text-subheading text-text-secondary leading-relaxed font-medium tracking-tight mb-16 md:mb-24">
-          <p class="text-text-primary">
-            To design and deploy intelligent digital solutions while building the hardware and infrastructure that support them, bringing structure to complexity, empowering businesses to operate efficiently, and expanding access to technology and digital skills for underserved communities.
+        <!-- Mission statement — distinct blockquote treatment, sets it apart from About's plain paragraphs -->
+        <blockquote class="border-l-2 border-accent pl-6 md:pl-8 mb-20 md:mb-28">
+          <p class="text-subheading text-text-primary leading-relaxed font-medium tracking-tight italic">
+            "To design and deploy intelligent digital solutions while building the hardware and infrastructure that support them, bringing structure to complexity, empowering businesses to operate efficiently, and expanding access to technology and digital skills for underserved communities."
           </p>
-        </div>
+        </blockquote>
 
-        <h3 class="text-[clamp(28px,4vw,48px)] font-bold text-text-primary leading-[1.1] tracking-tight">
-          We are committed to building systems that work,<br class="hidden md:block" />
-          <span class="text-text-secondary">infrastructure that lasts,</span><br class="hidden md:block" />
-          and opportunities that scale.
-        </h3>
+        <!-- Closing statement — given more room and a left accent to read as the page's actual close -->
+        <div class="border-l-2 border-white/10 pl-6 md:pl-8 py-2">
+          <h3 class="text-[clamp(28px,4vw,48px)] font-bold text-text-primary leading-[1.1] tracking-tight">
+            We are committed to building systems that work,<br class="hidden md:block" />
+            <span class="text-text-secondary">infrastructure that lasts,</span><br class="hidden md:block" />
+            and opportunities that scale.
+          </h3>
+        </div>
 
       </div>
 
-      <div class="mt-24 md:mt-32 pt-8 border-t border-white/5 opacity-0 animate-fade-up flex flex-wrap items-center gap-x-8 gap-y-4" style="animation-delay: 400ms; animation-fill-mode: forwards;">
-        <NuxtLink to="/careers" class="text-[13px] font-medium text-text-tertiary hover:text-accent transition-colors duration-200">Careers</NuxtLink>
-        <NuxtLink to="/partners" class="text-[13px] font-medium text-text-tertiary hover:text-accent transition-colors duration-200">Partners</NuxtLink>
-        <NuxtLink to="/pricing-policy" class="text-[13px] font-medium text-text-tertiary hover:text-accent transition-colors duration-200">Pricing Policy</NuxtLink>
-        <NuxtLink to="/privacy" class="text-[13px] font-medium text-text-tertiary hover:text-accent transition-colors duration-200">Privacy Policy</NuxtLink>
-        <NuxtLink to="/terms" class="text-[13px] font-medium text-text-tertiary hover:text-accent transition-colors duration-200">Terms of Service</NuxtLink>
+      <!-- Utility links — chip style, matching the pill language used elsewhere on the site -->
+      <div class="mt-24 md:mt-32 pt-8 border-t border-white/5 opacity-0 animate-fade-up flex flex-wrap items-center gap-3" style="animation-delay: 400ms; animation-fill-mode: forwards;">
+        <NuxtLink to="/careers" class="text-[12px] font-medium text-text-tertiary hover:text-accent border border-white/10 hover:border-accent/40 rounded-full px-3.5 py-1.5 transition-colors duration-200">Careers</NuxtLink>
+        <NuxtLink to="/partners" class="text-[12px] font-medium text-text-tertiary hover:text-accent border border-white/10 hover:border-accent/40 rounded-full px-3.5 py-1.5 transition-colors duration-200">Partners</NuxtLink>
+        <NuxtLink to="/pricing-policy" class="text-[12px] font-medium text-text-tertiary hover:text-accent border border-white/10 hover:border-accent/40 rounded-full px-3.5 py-1.5 transition-colors duration-200">Pricing Policy</NuxtLink>
+        <NuxtLink to="/privacy" class="text-[12px] font-medium text-text-tertiary hover:text-accent border border-white/10 hover:border-accent/40 rounded-full px-3.5 py-1.5 transition-colors duration-200">Privacy Policy</NuxtLink>
+        <NuxtLink to="/terms" class="text-[12px] font-medium text-text-tertiary hover:text-accent border border-white/10 hover:border-accent/40 rounded-full px-3.5 py-1.5 transition-colors duration-200">Terms of Service</NuxtLink>
       </div>
 
     </div>

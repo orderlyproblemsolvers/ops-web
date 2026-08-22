@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
         author: [
           {
             name: "Orderly Problem Solvers",
-            email: "orderlyproblemsolvers@gmail.com",
+            email: "support@orderlyproblemsolvers.com",
             link: "https://www.orderlyproblemsolvers.com"
           }
         ],

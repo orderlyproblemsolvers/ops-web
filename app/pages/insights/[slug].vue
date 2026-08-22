@@ -9,7 +9,7 @@
       />
     </div>
 
-    <div class="min-h-svh bg-white pt-10 lg:pt-32 pb-[80px] lg:pb-35 selection:bg-accent/15 selection:text-accent">
+    <div class="min-h-svh bg-mint pt-10 lg:pt-32 pb-[80px] lg:pb-35 selection:bg-accent/15 selection:text-accent">
 
       <div v-if="status === 'pending'" class="flex justify-center py-32">
         <UIcon name="i-lucide-loader-circle" class="w-10 h-10 animate-spin text-gray-300" />
@@ -28,71 +28,107 @@
         </NuxtLink>
       </div>
 
-      <article v-else ref="articleRef" class="max-w-190 mx-auto px-5 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
+      <div v-else class="max-w-270 mx-auto px-5 opacity-0 animate-fade-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
+        <div class="lg:grid lg:grid-cols-[1fr_220px] lg:gap-16">
 
-        <NuxtLink to="/insights" class="text-[14px] font-medium text-gray-400 hover:text-gray-900 mb-6 inline-flex items-center gap-1.5 transition-colors duration-200 group">
-          <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-          All Insights
-        </NuxtLink>
+          <article ref="articleRef" class="max-w-190 w-full">
 
-        <header class="mb-2">
-          <div class="flex flex-wrap items-center gap-3 mb-5">
-            <span class="text-[11px] font-medium text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 uppercase tracking-wide">
-              {{ post.category }}
-            </span>
-            <span class="w-1 h-1 rounded-full bg-gray-300" />
-            <span class="text-[13px] font-medium text-gray-400">{{ post.format }}</span>
-            <span class="w-1 h-1 rounded-full bg-gray-300" />
-            <span class="text-[13px] text-gray-400">{{ formatDate(post.createdAt as string) }}</span>
-          </div>
+            <NuxtLink to="/insights" class="text-[14px] font-medium text-gray-400 hover:text-gray-900 mb-6 inline-flex items-center gap-1.5 transition-colors duration-200 group">
+              <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              All Insights
+            </NuxtLink>
 
-          <h1 class="text-[clamp(28px,4vw,48px)] font-bold text-gray-900 tracking-tight leading-[1.1] mb-5">
-            {{ post.title }}
-          </h1>
+            <header class="mb-2">
+              <div class="flex flex-wrap items-center gap-3 mb-5">
+                <span class="text-[11px] font-medium text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 uppercase tracking-wide">
+                  {{ post.category }}
+                </span>
+                <span class="w-1 h-1 rounded-full bg-gray-300" />
+                <span class="text-[13px] font-medium text-gray-400">{{ post.format }}</span>
+                <span class="w-1 h-1 rounded-full bg-gray-300" />
+                <span class="text-[13px] text-gray-400">{{ formatDate(post.createdAt as string) }}</span>
+              </div>
 
-          <p v-if="post.excerpt" class="text-[clamp(16px,2vw,20px)] text-gray-500 leading-relaxed">
-            {{ post.excerpt }}
-          </p>
-        </header>
+              <h1 class="text-[clamp(28px,4vw,48px)] font-bold text-gray-900 tracking-tight leading-[1.1] mb-5">
+                {{ post.title }}
+              </h1>
 
-        <!-- Share bar -->
-        <div class="flex items-center gap-3 py-2 border-y border-gray-100 mb-4">
-          <span class="text-[13px] font-medium text-gray-400 mr-2">Share:</span>
-          <button
-            @click="shareToTwitter"
-            class="w-9 h-9 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-all duration-200"
-            aria-label="Share on X (Twitter)"
-          >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.004 4.076H5.036z"/></svg>
-          </button>
-          <button
-            @click="shareToLinkedIn"
-            class="w-9 h-9 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-all duration-200"
-            aria-label="Share on LinkedIn"
-          >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 23.2 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          </button>
-          <button
-            @click="copyLink"
-            class="w-9 h-9 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-all duration-200"
-            aria-label="Copy link"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-          </button>
+              <p v-if="post.excerpt" class="text-[clamp(16px,2vw,20px)] text-gray-500 leading-relaxed mb-6">
+                {{ post.excerpt }}
+              </p>
+
+              <!-- Author -->
+              <div class="flex items-center gap-3 pb-6">
+                <img
+                  src="/img/founder.png"
+                  alt="Inikori Efe"
+                  class="w-9 h-9 rounded-full object-cover border border-gray-200"
+                  loading="lazy"
+                />
+                <div>
+                  <div class="text-[13px] font-medium text-gray-900 leading-tight">Inikori Efe</div>
+                  <div class="text-[12px] text-gray-400 leading-tight">Orderly Problem Solvers</div>
+                </div>
+              </div>
+            </header>
+
+            <div v-if="post.coverImage" class="w-full rounded-[16px] overflow-hidden mb-12 border border-gray-100 aspect-video">
+              <NuxtImg
+                :src="post.coverImage"
+                :alt="post.title"
+                format="webp"
+                width="900"
+                height="506"
+                class="w-full h-full object-cover"
+              />
+            </div>
+
+            <!-- Mobile ToC — collapsible, hidden on lg where the sticky rail takes over -->
+            <details v-if="toc.length" class="lg:hidden mb-8 bg-white border border-gray-200 rounded-[14px] p-4">
+              <summary class="text-[13px] font-semibold text-gray-900 cursor-pointer select-none">On this page</summary>
+              <nav class="mt-3 flex flex-col gap-2">
+                <a
+                  v-for="item in toc"
+                  :key="item.id"
+                  :href="`#${item.id}`"
+                  class="text-[13px] text-gray-500 hover:text-accent transition-colors duration-150"
+                  :class="item.level === 3 ? 'pl-3' : ''"
+                >
+                  {{ item.text }}
+                </a>
+              </nav>
+            </details>
+
+            <div ref="contentRef" class="tiptap-content" v-html="post.content" />
+
+          </article>
+
+          <!-- Desktop ToC — sticky right rail -->
+          <aside v-if="toc.length" class="hidden lg:block">
+            <nav class="sticky top-32 flex flex-col gap-2.5 border-l border-gray-200 pl-5">
+              <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">On this page</span>
+              <a
+                v-for="item in toc"
+                :key="item.id"
+                :href="`#${item.id}`"
+                class="text-[13px] leading-snug transition-colors duration-150"
+                :class="[
+                  item.level === 3 ? 'pl-3' : '',
+                  activeHeadingId === item.id ? 'text-accent font-medium' : 'text-gray-500 hover:text-gray-900',
+                ]"
+              >
+                {{ item.text }}
+              </a>
+            </nav>
+          </aside>
+
         </div>
-
-        <div v-if="post.coverImage" class="w-full rounded-[16px] overflow-hidden mb-12 border border-gray-100 aspect-video">
-          <img :src="post.coverImage" :alt="post.title" class="w-full h-full object-cover" />
-        </div>
-
-        <div ref="contentRef" class="tiptap-content" v-html="post.content" />
-
-      </article>
+      </div>
 
       <!-- Related posts -->
-      <div v-if="relatedPosts?.length" class="max-w-190 mx-auto px-5 mt-20 pt-12 border-t border-gray-100">
+      <div v-if="relatedPosts?.length" class="max-w-270 mx-auto px-5 mt-20 pt-12 border-t border-gray-100">
         <h3 class="text-[20px] font-bold text-gray-900 mb-6">Keep Reading</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <NuxtLink
             v-for="related in relatedPosts"
             :key="related.id"
@@ -101,7 +137,16 @@
             @click="handleRelatedClick(related)"
           >
             <div class="aspect-video w-full overflow-hidden relative border-b border-gray-100 shrink-0">
-              <img v-if="related.coverImage" :src="related.coverImage" :alt="related.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+              <NuxtImg
+                v-if="related.coverImage"
+                :src="related.coverImage"
+                :alt="related.title"
+                format="webp"
+                width="400"
+                height="225"
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
               <div v-else class="absolute inset-0 bg-gray-50 flex items-center justify-center">
                 <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
               </div>
@@ -132,42 +177,42 @@
         <div class="-translate-x-1/2 -translate-y-full -mt-2 pointer-events-auto">
           <button
             @mousedown.prevent="copyQuote"
-            class="flex items-center gap-1.5 bg-gray-900 text-white text-[12px] font-medium px-3 py-2 rounded-lg shadow-xl hover:bg-gray-800 transition-colors duration-150 whitespace-nowrap"
+            class="flex items-center gap-1.5 bg-ops-navy text-white text-[12px] font-medium px-3 py-2 rounded-lg shadow-xl hover:bg-ops-surface transition-colors duration-150 whitespace-nowrap"
           >
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
             Copy quote
           </button>
-          <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[5px] border-l-transparent border-r-transparent border-t-gray-900" />
+          <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[5px] border-l-transparent border-r-transparent border-t-ops-navy" />
         </div>
       </div>
     </Transition>
 
-    <!-- ─── Sticky share CTA ───────────────────────────────────────────────── -->
+    <!-- ─── Sticky share CTA — the single share UI on this page ────────────── -->
     <Transition name="sticky-share">
       <div
         v-if="showStickyShare"
         class="fixed bottom-6 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 z-[9000]"
       >
-        <div class="flex items-center justify-center gap-2 bg-gray-900/95 backdrop-blur-sm rounded-full pl-4 pr-2 py-2 shadow-2xl border border-white/10 w-full sm:w-auto">
+        <div class="flex items-center justify-center gap-2 bg-ops-navy/95 backdrop-blur-sm rounded-full pl-4 pr-2 py-2 shadow-2xl border border-white/10 w-full sm:w-auto">
           <span class="text-[12px] font-medium text-white/60 hidden sm:block">Share this insight</span>
           <div class="w-px h-4 bg-white/15 mx-1 hidden sm:block" />
           <button
             @click="shareToTwitter"
-            class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all duration-150"
+            class="w-8 h-8 rounded-full hover:bg-accent/20 flex items-center justify-center text-white/70 hover:text-accent transition-all duration-150"
             aria-label="Share on X (Twitter)"
           >
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.004 4.076H5.036z"/></svg>
           </button>
           <button
             @click="shareToLinkedIn"
-            class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all duration-150"
+            class="w-8 h-8 rounded-full hover:bg-accent/20 flex items-center justify-center text-white/70 hover:text-accent transition-all duration-150"
             aria-label="Share on LinkedIn"
           >
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 23.2 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           </button>
           <button
             @click="copyLink"
-            class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all duration-150"
+            class="w-8 h-8 rounded-full hover:bg-accent/20 flex items-center justify-center text-white/70 hover:text-accent transition-all duration-150"
             aria-label="Copy link"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
@@ -180,32 +225,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useToast } from '#imports'
+
+// This page has a light (mint) background — declare it via page meta instead of
+// a hardcoded route list, same pattern used on /insights.
+definePageMeta({
+  headerTheme: 'light',
+})
 
 const route = useRoute()
 const toast = useToast()
 
-// ─── Data fetching ─────────────────────────────────────────────────────────────
+// ─── Data fetching — run in parallel instead of two sequential awaits ────────
 
-const { data: post, status, error } = await useFetch(`/api/public/insights/${route.params.slug}`)
+const [postRes, relatedRes] = await Promise.all([
+  useFetch(`/api/public/insights/${route.params.slug}`, {
+    key: `insight-${route.params.slug}`,
+  }),
+  useFetch('/api/public/insights', {
+    key: `related-insights-${route.params.slug}`,
+    transform: (posts: any[]) => posts.filter((p) => p.slug !== route.params.slug).slice(0, 3),
+  }),
+])
 
-const { data: relatedPosts } = await useFetch('/api/public/insights', {
-  transform: (posts) => posts.filter((p: any) => p.slug !== route.params.slug).slice(0, 2)
-})
+const { data: post, status, error } = postRes
+const { data: relatedPosts } = relatedRes
 
-// ─── Scroll progress ───────────────────────────────────────────────────────────
+// ─── Scroll progress + read-depth milestones (single scroll-based check —
+// no DOM sentinel injection, no per-milestone IntersectionObserver) ──────────
 
 const scrollProgress = ref(0)
 const showStickyShare = ref(false)
+const readDepthReached = ref(new Set<number>())
+const READ_MILESTONES = [25, 50, 75, 100]
 let progressTicking = false
 
 const updateProgress = () => {
   const docHeight = document.documentElement.scrollHeight - window.innerHeight
   const pct = docHeight > 0 ? Math.min(100, (window.scrollY / docHeight) * 100) : 0
   scrollProgress.value = pct
+
   if (pct >= 40) showStickyShare.value = true
   else if (pct < 35) showStickyShare.value = false
+
+  READ_MILESTONES.forEach((milestone) => {
+    if (pct >= milestone && !readDepthReached.value.has(milestone)) {
+      readDepthReached.value.add(milestone)
+      track('article_read_depth', {
+        article_title: post.value?.title,
+        article_slug: route.params.slug,
+        category: post.value?.category,
+        percent_read: milestone,
+      })
+    }
+  })
+
+  updateActiveHeading()
   progressTicking = false
 }
 
@@ -214,6 +290,53 @@ const handleProgressScroll = () => {
     requestAnimationFrame(updateProgress)
     progressTicking = true
   }
+}
+
+// ─── Table of contents — built from the rendered content's headings ─────────
+
+interface TocItem { id: string; text: string; level: 2 | 3 }
+const toc = ref<TocItem[]>([])
+const activeHeadingId = ref('')
+let headingEls: HTMLElement[] = []
+
+const slugify = (text: string) =>
+  text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
+
+const buildToc = () => {
+  if (!contentRef.value) return
+  const headings = Array.from(contentRef.value.querySelectorAll('h2, h3')) as HTMLElement[]
+  const seen = new Set<string>()
+
+  toc.value = headings.map((el) => {
+    let id = el.id || slugify(el.textContent || '')
+    let unique = id
+    let i = 2
+    while (seen.has(unique)) {
+      unique = `${id}-${i++}`
+    }
+    seen.add(unique)
+    el.id = unique
+
+    return {
+      id: unique,
+      text: el.textContent || '',
+      level: el.tagName === 'H3' ? 3 : 2,
+    }
+  })
+
+  headingEls = headings
+}
+
+const updateActiveHeading = () => {
+  if (!headingEls.length) return
+  const offset = 140 // account for fixed header
+  let current = headingEls[0]?.id ?? ''
+  for (const el of headingEls) {
+    if (el.getBoundingClientRect().top - offset <= 0) {
+      current = el.id
+    }
+  }
+  activeHeadingId.value = current
 }
 
 // ─── Copy-to-quote ─────────────────────────────────────────────────────────────
@@ -278,16 +401,10 @@ const track = (eventName: string, params?: Record<string, any>) => {
   window.gtag('event', eventName, params)
 }
 
-// ─── Read depth tracking ───────────────────────────────────────────────────────
+// ─── Time on page tracking ────────────────────────────────────────────────────
 
 const articleRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
-const readDepthReached = ref(new Set<number>())
-let readDepthObserver: IntersectionObserver | null = null
-const READ_MILESTONES = [25, 50, 75, 100]
-
-// ─── Time on page tracking ────────────────────────────────────────────────────
-
 let pageEntryTime = 0
 
 const handleVisibilityChange = () => {
@@ -318,48 +435,20 @@ const handleContentClick = (e: MouseEvent) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   pageEntryTime = Date.now()
   document.addEventListener('visibilitychange', handleVisibilityChange)
   window.addEventListener('scroll', handleProgressScroll, { passive: true })
   document.addEventListener('mouseup', handleSelectionEnd)
   document.addEventListener('touchend', handleSelectionEnd)
   document.addEventListener('mousedown', handleDocMouseDown)
+
+  await nextTick()
+  buildToc()
   updateProgress()
 
   if (contentRef.value) {
     contentRef.value.addEventListener('click', handleContentClick)
-  }
-
-  if (articleRef.value) {
-    const article = articleRef.value
-    READ_MILESTONES.forEach((milestone) => {
-      const sentinel = document.createElement('div')
-      sentinel.dataset.milestone = String(milestone)
-      sentinel.style.cssText = `position:absolute;left:0;width:1px;height:1px;top:${milestone}%;pointer-events:none;`
-      article.style.position = 'relative'
-      article.appendChild(sentinel)
-
-      readDepthObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return
-            const pct = Number((entry.target as HTMLElement).dataset.milestone)
-            if (readDepthReached.value.has(pct)) return
-            readDepthReached.value.add(pct)
-            track('article_read_depth', {
-              article_title: post.value?.title,
-              article_slug: route.params.slug,
-              category: post.value?.category,
-              percent_read: pct,
-            })
-            readDepthObserver?.unobserve(entry.target)
-          })
-        },
-        { threshold: 0 }
-      )
-      readDepthObserver.observe(sentinel)
-    })
   }
 })
 
@@ -370,7 +459,6 @@ onUnmounted(() => {
   document.removeEventListener('touchend', handleSelectionEnd)
   document.removeEventListener('mousedown', handleDocMouseDown)
   contentRef.value?.removeEventListener('click', handleContentClick)
-  readDepthObserver?.disconnect()
 })
 
 // ─── Share functions ───────────────────────────────────────────────────────────
@@ -500,8 +588,8 @@ useHead({
   color: #374151;
 }
 
-:deep(.tiptap-content h2) { font-size: 1.65rem; font-weight: 600; color: #111827; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.3; text-decoration: underline; text-decoration-color: #118ab2; text-underline-offset: 4px; }
-:deep(.tiptap-content h3) { font-size: 1.25rem; font-weight: 600; color: #111827; margin-top: 2rem; margin-bottom: 0.875rem; line-height: 1.3; }
+:deep(.tiptap-content h2) { font-size: 1.65rem; font-weight: 600; color: #111827; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.3; text-decoration: underline; text-decoration-color: #118ab2; text-underline-offset: 4px; scroll-margin-top: 120px; }
+:deep(.tiptap-content h3) { font-size: 1.25rem; font-weight: 600; color: #111827; margin-top: 2rem; margin-bottom: 0.875rem; line-height: 1.3; scroll-margin-top: 120px; }
 
 :deep(.tiptap-content p) { margin-bottom: 1.4rem; }
 

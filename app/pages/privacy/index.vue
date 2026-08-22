@@ -68,7 +68,7 @@
         <p>
           If you have any questions about this privacy policy or our privacy practices, please contact us at:
           <br><br>
-          <strong>Email:</strong> <a href="mailto:orderlyproblemsolvers@gmail.com" class="text-accent hover:text-white transition-colors">orderlyproblemsolvers@gmail.com</a>
+          <strong>Email:</strong> <a href="mailto:support@orderlyproblemsolvers.com" class="text-accent hover:text-white transition-colors">support@orderlyproblemsolvers.com</a>
         </p>
       </div>
 
